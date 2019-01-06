@@ -1,5 +1,4 @@
 
-
 syntax: glob
 doc/_build
 modulegraph.egg-info
@@ -14,7 +13,7 @@ build
 *.so
 __pycache__
 htmlcov
-.coverage
+.coverage*
 .DS_Store
 .tox
 .mypy_cache
