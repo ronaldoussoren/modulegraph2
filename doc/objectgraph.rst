@@ -14,6 +14,9 @@ modulegraph2.ObjectGraph - A basic directed graph with roots
 
    The graph has explicit root nodes, primarily used by the graph iteration method.
 
+   For `mypy <https://mypy.readthedocs.io>`_ users the ObjectGraph class is a generic class
+   where the type parameter is the (base-)type of the graph nodes.
+
    .. function:: add_node(node)
 
       Adds node to the graph.
