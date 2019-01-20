@@ -7,4 +7,7 @@ isort mypy flake8 black py36 py37:
 test:
 	python3.7 -m tox -e py37
 
-.PHONY: all isort mypy flake8 black py36 py37 test
+dotview:
+	python3.7 -m modulegraph2 > ../f.dot && dot -Tpng ../f.dot -o ../f.png && open ../f.png
+
+.PHONY: all isort mypy flake8 black py36 py37 test dotview
