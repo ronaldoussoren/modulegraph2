@@ -1,9 +1,21 @@
-This is a redesign and reimplementation of the modulegraph library
+Introduction
+------------
 
-The current state is basically unworkable.
+Modulegraph2 is a library for creating and introspecting
+the dependency graph between Python modules. The graph is
+created using static analisys from source and byte code.
 
-The goal is to end up with a maintainable Python 3 codebase
-that is used in the cleanup of py2app.
+The dependency graph contains information about packages,
+modules, extensions and their dependencies. The dependencies
+are annotated with relevant information about the import
+statement.
 
-Maintaining API compatibility with the current release of modulegraph
-is not a goal.
+Modules that from a distribution installed using pip also have
+a link to information about that distribution.
+
+Historic
+........
+
+Modulegraph2 is a complete rewrite of `modulegraph <https://pypi.org/project/modulegraph/>`_,
+using lessons learned in that project but with a complete new
+Python 3 code base and full test coverage.
