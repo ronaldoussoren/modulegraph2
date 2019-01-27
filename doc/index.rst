@@ -1,23 +1,69 @@
 Modulegraph2 - Python module dependency graph
 =============================================
 
-Rewrite of the older "modulegraph" package.
+Modulegraph2 is a library for creating and introspecting
+the dependency graph between Python modules. The graph is
+created using static analisys from source and byte code.
 
-This package is Python 3 only.
+The dependency graph contains information about packages,
+modules, extensions and their dependencies. The dependencies
+are annotated with relevant information about the import
+statement.
 
-Contents:
+Modules that from a distribution installed using `pip`_ also have
+a link to information about that distribution.
+
+
+Release information
+-------------------
+
+Modulegraph2 2.0a0 was released on YYYY-mm-dd. See the :doc:`changelog <changelog>`
+for information on this release.
+
+
+Installation
+------------
+
+Modulegraph2 can be installed using `pip <https://pypi.org/project/pip/>`_.
+
+
+Supported platforms
+-------------------
+
+Modulegraph2 supports Python 3.6 and later on all platforms. The code
+is developed using Python 3.7 on macOS, but and regularly tested with
+other Python versions and on Linux and Windows.
+
+.. todo::
+
+   Insert links to CI status
+
+Using modulegraph2
+------------------
 
 .. toctree::
    :maxdepth: 1
 
-   changelog
+   command-line
+   modulegraph2
+
+.. todo::
+
+   Reference docs and examples
+
+
+Development
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
    license
-   objectgraph
-   packageinfo
+   changelog
    development
 
 Online Resources
-----------------
+................
 
 * `Sourcecode repository on bitbucket <http://bitbucket.org/ronaldoussoren/modulegraph2/>`_
 

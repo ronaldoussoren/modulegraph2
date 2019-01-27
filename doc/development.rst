@@ -27,3 +27,8 @@ Testing
 The production code (package "modulegraph2") should have full
 test coverage. Take care to verify that new code is actually tested
 and not just accidently covered.
+
+CI
+--
+
+Information about the CI setup (macOS, Windows, Linux; Py3.6, 3.7 and 3.8)
