@@ -1,0 +1,236 @@
+Modulegraph2 internals
+======================
+
+.. warning::
+
+   Everything documented in this file is private to the implementation
+   of modulegraph and should not be relied on by users of the module.
+
+   Please file and issue if you do need functionality documented here,
+   and include the use case you need the functionality for.
+
+Package structure
+-----------------
+
+The modulegraph2 package contains a number of submodules that
+actually implement the behavior, with code separated in logical
+modules.
+
+All submodules with a name that start with an underscore are
+private, and that's also true for all names defined in those
+modules unless they are explicitly exported by the package
+``__init__.py`` file.
+
+
+Module "_ast_tools": working with the AST for a module
+------------------------------------------------------
+
+.. automodule:: modulegraph2._ast_tools
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_bytecode_tools": working with the bytecode for a module
+----------------------------------------------------------------
+
+.. automodule:: modulegraph2._bytecode_tools
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_callback_list": working with lists of callbacks
+--------------------------------------------------------
+
+.. automodule:: modulegraph2._callback_list
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_depinfo": information about a dependency
+-------------------------------------------------
+
+.. automodule:: modulegraph2._depinfo
+
+Public API
+..........
+
+This module defines the following public API:
+
+* :class:`modulegraph2.DependencyInfo`
+
+Private API
+...........
+
+.. autofunction:: modulegraph2._depinfo.from_importinfo
+
+
+Module "_depproc": working with lists of dependencies
+-----------------------------------------------------
+
+.. automodule:: modulegraph2._depproc
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_distributions": Package distributions
+----------------------------------------------
+
+.. automodule:: modulegraph2._distributions
+
+Public API
+..........
+
+This module defines the following public API:
+
+* :class:`modulegraph2.PyPIDistribution`
+
+* :func:`modulegraph2.all_distributions`
+
+* :func:`modulegraph2.distribution_named`
+
+Private API
+...........
+
+.. data:: modulegraph2._distributions._cached_distributions
+
+   Global variable used by :func:`modulegraph2.all_distributions` to
+   cache the distributions found on :data:`sys.path`. This is used both
+   for performance and to ensure module graphs end up with one
+   :class:`PyPIDistribution` per distribution found.
+
+.. autofunction:: modulegraph2._distributions.create_distribution
+
+.. autofunction:: modulegraph2._distributions.distribution_for_file
+
+
+.. autofunction:: modulegraph2._depinfo.from_importinfo
+
+Module "_dotbuilder": Outputting graphviz files
+-----------------------------------------------
+
+.. automodule:: modulegraph2._dotbuilder
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_graphbuilder": Support functions for building dependency graphs
+------------------------------------------------------------------------
+
+.. automodule:: modulegraph2._graphbuilder
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_htmlbuilder": Outputting HTML files
+--------------------------------------------
+
+.. automodule:: modulegraph2._htmlbuilder
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_implies": Implied dependencies for stdlib
+--------------------------------------------------
+
+.. automodule:: modulegraph2._implies
+   :members:
+   :undoc-members:
+   :private-members:
+
+Module "_importinfo": Information about edges in the dependency graph
+---------------------------------------------------------------------
+
+.. automodule:: modulegraph2._importinfo
+
+Public API
+..........
+
+This module defines the following public API:
+
+* :class:`modulegraph2.ImportInfo`
+
+Private API
+...........
+
+.. autofunction:: modulegraph2._importinfo.create_importinfo
+
+Module "_modulegraph": The main module graph and builder
+--------------------------------------------------------
+
+.. automodule:: modulegraph2._modulegraph
+
+Public API
+..........
+
+This module defines the following public API:
+
+* :class:`modulegraph2.ModuleGraph`
+
+Private API
+...........
+
+.. autodata:: modulegraph2._modulegraph.ProcessingCallback
+.. autodata:: modulegraph2._modulegraph.MissingCallback
+.. autodata:: modulegraph2._modulegraph.DEFAULT_DEPENDENCY
+
+.. autofunction:: modulegraph2._modulegraph.split_package
+
+The ModuleGraph class also contains private methods,
+documented below:
+
+.. automethod:: modulegraph2.ModuleGraph._run_post_processing
+.. automethod:: modulegraph2.ModuleGraph._create_missing_module
+.. automethod:: modulegraph2.ModuleGraph._run_q
+.. automethod:: modulegraph2.ModuleGraph._implied_references
+.. automethod:: modulegraph2.ModuleGraph._load_module
+.. automethod:: modulegraph2.ModuleGraph._load_script
+.. automethod:: modulegraph2.ModuleGraph._process_import_list
+.. automethod:: modulegraph2.ModuleGraph._find_or_load_module
+.. automethod:: modulegraph2.ModuleGraph._process_import
+.. automethod:: modulegraph2.ModuleGraph._process_namelist
+
+Building the graph
+..................
+
+The graph building algorithm explictly manages a work stack
+to avoid exhausting the stack. This is a work stack because
+imports need to be processed depth first to be able to
+process ``from ... import ...`` statements correctly.
+
+Module "_nodes": Definition of graph nodes
+------------------------------------------
+
+.. automodule:: modulegraph2._nodes
+
+Public API
+..........
+
+This module defines the following public API:
+
+* :class:`modulegraph2.AliasNode`
+* :class:`modulegraph2.BuiltinModule`
+* :class:`modulegraph2.BytecodeModule`
+* :class:`modulegraph2.ExcludedModule`
+* :class:`modulegraph2.ExtensionModule`
+* :class:`modulegraph2.FrozenModule`
+* :class:`modulegraph2.MissingModule`
+* :class:`modulegraph2.Module`
+* :class:`modulegraph2.NamespacePackage`
+* :class:`modulegraph2.Package`
+* :class:`modulegraph2.Script`
+* :class:`modulegraph2.SourceModule`
+* :class:`modulegraph2.InvalidRelativeImport`
+
+Private API
+...........
+
+.. autoclass:: modulegraph2._nodes.BaseNode
+
+
+Module "_swig_support": Hooks for dealing with SWIG
+---------------------------------------------------
+
+.. automodule:: modulegraph2._swig_support
+   :members:
+   :undoc-members:
+   :private-members:

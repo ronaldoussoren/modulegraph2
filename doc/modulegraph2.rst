@@ -102,3 +102,7 @@ Distributions
 .. autofunction:: modulegraph2.all_distributions
 
 
+Utilities
+.........
+
+.. autofunctions:: modulegraph2.saved_sys_path

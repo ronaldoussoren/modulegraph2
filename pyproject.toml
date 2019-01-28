@@ -10,6 +10,7 @@ home-page = "https://modulegraph2.readthedocs.io/"
 description-file = "ReadMe.rst"
 requires = [
     "typing_extensions",
+    "objectgraph==1.0a0",
 
     # Backward compatiblity with Python 3.6:
     "dataclasses; python_version < '3.7'",
