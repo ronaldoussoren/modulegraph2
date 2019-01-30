@@ -21,6 +21,8 @@ private, and that's also true for all names defined in those
 modules unless they are explicitly exported by the package
 ``__init__.py`` file.
 
+.. contents::
+   :depth: 2
 
 Module "_ast_tools": working with the AST for a module
 ------------------------------------------------------
@@ -64,10 +66,10 @@ Private API
 .. autofunction:: modulegraph2._depinfo.from_importinfo
 
 
-Module "_depproc": working with lists of dependencies
------------------------------------------------------
+Module "_delayed_call": working with lists of dependencies
+----------------------------------------------------------
 
-.. automodule:: modulegraph2._depproc
+.. automodule:: modulegraph2._delayed_call
    :members:
    :undoc-members:
    :private-members:
@@ -133,26 +135,25 @@ Module "_implies": Implied dependencies for stdlib
 --------------------------------------------------
 
 .. automodule:: modulegraph2._implies
-   :members:
-   :undoc-members:
-   :private-members:
+
+   .. autoclass:: Alias
+      :members:
+
+   .. autodata:: STDLIB_IMPLIES
+      :annotation:
+
+   .. autodata:: STDLIB_PLATFORM_IMPLIES
+      :annotation:
+
+   .. autodata:: STDLIB_VERSION_IMPLIES
+      :annotation:
 
 Module "_importinfo": Information about edges in the dependency graph
 ---------------------------------------------------------------------
 
 .. automodule:: modulegraph2._importinfo
-
-Public API
-..........
-
-This module defines the following public API:
-
-* :class:`modulegraph2.ImportInfo`
-
-Private API
-...........
-
-.. autofunction:: modulegraph2._importinfo.create_importinfo
+   :members:
+   :undoc-members:
 
 Module "_modulegraph": The main module graph and builder
 --------------------------------------------------------
@@ -175,12 +176,14 @@ Private API
 
 .. autofunction:: modulegraph2._modulegraph.split_package
 
+.. autoclass:: modulegraph2._modulegraph.FakePackage
+
 The ModuleGraph class also contains private methods,
 documented below:
 
 .. automethod:: modulegraph2.ModuleGraph._run_post_processing
 .. automethod:: modulegraph2.ModuleGraph._create_missing_module
-.. automethod:: modulegraph2.ModuleGraph._run_q
+.. automethod:: modulegraph2.ModuleGraph._run_stack
 .. automethod:: modulegraph2.ModuleGraph._implied_references
 .. automethod:: modulegraph2.ModuleGraph._load_module
 .. automethod:: modulegraph2.ModuleGraph._load_script
@@ -197,6 +200,10 @@ to avoid exhausting the stack. This is a work stack because
 imports need to be processed depth first to be able to
 process ``from ... import ...`` statements correctly.
 
+.. todo::
+
+   Add a clear description of the graph building algorithm.
+
 Module "_nodes": Definition of graph nodes
 ------------------------------------------
 
@@ -208,6 +215,7 @@ Public API
 This module defines the following public API:
 
 * :class:`modulegraph2.AliasNode`
+* :class:`modulegraph2.BaseNode`
 * :class:`modulegraph2.BuiltinModule`
 * :class:`modulegraph2.BytecodeModule`
 * :class:`modulegraph2.ExcludedModule`
@@ -224,7 +232,7 @@ This module defines the following public API:
 Private API
 ...........
 
-.. autoclass:: modulegraph2._nodes.BaseNode
+This module does not have a private API.
 
 
 Module "_swig_support": Hooks for dealing with SWIG
