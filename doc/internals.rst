@@ -66,14 +66,6 @@ Private API
 .. autofunction:: modulegraph2._depinfo.from_importinfo
 
 
-Module "_delayed_call": working with lists of dependencies
-----------------------------------------------------------
-
-.. automodule:: modulegraph2._delayed_call
-   :members:
-   :undoc-members:
-   :private-members:
-
 Module "_distributions": Package distributions
 ----------------------------------------------
 
