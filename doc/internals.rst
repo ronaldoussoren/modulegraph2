@@ -166,14 +166,11 @@ Private API
 .. autodata:: modulegraph2._modulegraph.MissingCallback
 .. autodata:: modulegraph2._modulegraph.DEFAULT_DEPENDENCY
 
-.. autofunction:: modulegraph2._modulegraph.split_package
-
 .. autoclass:: modulegraph2._modulegraph.FakePackage
 
 The ModuleGraph class also contains private methods,
 documented below:
 
-.. automethod:: modulegraph2.ModuleGraph._run_post_processing
 .. automethod:: modulegraph2.ModuleGraph._create_missing_module
 .. automethod:: modulegraph2.ModuleGraph._run_stack
 .. automethod:: modulegraph2.ModuleGraph._implied_references
@@ -234,3 +231,20 @@ Module "_swig_support": Hooks for dealing with SWIG
    :members:
    :undoc-members:
    :private-members:
+
+Module "_utilities": Definition of graph nodes
+----------------------------------------------
+
+.. automodule:: modulegraph2._utilities
+
+Public API
+..........
+
+This module defines the following public API:
+
+* :class:`modulegraph2.saved_sys_path`
+
+Private API
+...........
+
+.. autofunction:: modulegraph2._utilities.split_package
