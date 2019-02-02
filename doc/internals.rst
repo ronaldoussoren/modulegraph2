@@ -164,10 +164,15 @@ Private API
 ...........
 
 .. autodata:: modulegraph2._modulegraph.ProcessingCallback
-.. autodata:: modulegraph2._modulegraph.MissingCallback
-.. autodata:: modulegraph2._modulegraph.DEFAULT_DEPENDENCY
+   :annotation:
 
-.. autoclass:: modulegraph2._modulegraph.FakePackage
+.. autodata:: modulegraph2._modulegraph.MissingCallback
+   :annotation:
+
+.. autodata:: modulegraph2._modulegraph.DEFAULT_DEPENDENCY
+   :annotation:
+
+
 
 The ModuleGraph class also contains private methods,
 documented below:

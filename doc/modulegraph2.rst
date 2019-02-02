@@ -93,6 +93,10 @@ below. All these classes are :class:`dataclasses <dataclasses.dataclass>`.
 Special nodes
 ~~~~~~~~~~~~~
 
+.. autoclass:: modulegraph2.VirtualNode
+   :members:
+   :show-inheritance:
+
 .. autoclass:: modulegraph2.AliasNode
    :members:
    :show-inheritance:
@@ -130,3 +134,8 @@ Utilities
 .........
 
 .. autofunction:: modulegraph2.saved_sys_path
+
+
+.. class:: modulegraph2.Alias
+
+.. class:: modulegraph2.Virtual
