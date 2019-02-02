@@ -20,6 +20,8 @@ Creating the graph
 
 .. automethod:: modulegraph2.ModuleGraph.add_script
 
+.. automethod:: modulegraph2.ModuleGraph.add_distribution
+
 Affecting building the graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

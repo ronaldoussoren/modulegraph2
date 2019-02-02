@@ -47,6 +47,7 @@ Module "_callback_list": working with lists of callbacks
    :members:
    :undoc-members:
    :private-members:
+   :special-members: __call__
 
 Module "_depinfo": information about a dependency
 -------------------------------------------------
@@ -248,3 +249,5 @@ Private API
 ...........
 
 .. autofunction:: modulegraph2._utilities.split_package
+
+.. autoclass:: modulegraph2._utilities.FakePackage
