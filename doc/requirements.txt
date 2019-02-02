@@ -1,4 +1,4 @@
-pip>=19
+pip>=19.0.1
 sphinx
 typing_extensions
 sphinxcontrib.blockdiag
