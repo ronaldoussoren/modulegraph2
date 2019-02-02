@@ -17,7 +17,7 @@ a link to information about that distribution.
 Release information
 -------------------
 
-Modulegraph2 2.0a0 was released on YYYY-mm-dd. See the :doc:`changelog <changelog>`
+Modulegraph2 2.0a1 was released on 2019-02-03. See the :doc:`changelog <changelog>`
 for information on this release.
 
 
