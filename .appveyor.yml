@@ -25,10 +25,10 @@ matrix:
 
 build: off
 install:
-- cmd: '%PYTHON%\\python.exe -m pip install objectgraph typing_extensions wheel virtualenv %DEPS%'
+- cmd: '%WIN_PYTHON%\\python.exe -m pip install objectgraph typing_extensions wheel virtualenv %DEPS%'
 - sh: '~/venv$LNX_PYTHON*/bin/python3 -m pip install objectgraph typing_extensions wheel virtualenv $DEPS'
 test_script:
-- cmd: '%PYTHON%\\python.exe -m unittest -v'
+- cmd: '%WIN_PYTHON%\\python.exe -m unittest -v'
 - sh: '~/venv$LNX_PYTHON*/bin/python3 -m unittest -v'
 notifications:
 - provider: Email
