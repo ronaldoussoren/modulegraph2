@@ -1,7 +1,7 @@
 image:
 - Visual Studio 2017
 - Ubuntu
-stack: python 3.6, python 3.7
+stack: python 3.7
 version: '{branch}-{build}'
 branches:
   only:
@@ -10,16 +10,18 @@ environment:
   matrix:
   - WIN_PYTHON: C:\\Python36
     LNX_PYTHON: 3.6
+    DEPS: dataclasses importlib_resources
 
   - WIN_PYTHON: C:\\Python37
     LNX_PYTHON: 3.7
+    DEPS:
 
 matrix:
   # For some reason 3.7 on Linux won't work
   # with a platform error
   exclude:
     - image: Ubuntu
-      LNX_PYTHON: 3.7
+      LNX_PYTHON: 3.6
 
 build: off
 install:
