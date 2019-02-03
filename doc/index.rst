@@ -39,6 +39,9 @@ other Python versions and on Linux and Windows.
    Currently the code is only tested on macOS, testing on
    Linux and Windows will be added soon.
 
+   Initial testing on Windows (through AppVeyor) found a number
+   of issues, I'm looking into how to debug those.
+
 
 Using modulegraph2
 ------------------
