@@ -1,7 +1,7 @@
 image:
 - Visual Studio 2017
 - Ubuntu
-stack: python 3.7
+stack: python 3.6, python 3.7
 version: '{branch}-{build}'
 branches:
   only:
@@ -21,7 +21,7 @@ matrix:
   # with a platform error
   exclude:
     - image: Ubuntu
-      LNX_PYTHON: 3.6
+      LNX_PYTHON: 3.7
 
 build: off
 install:
