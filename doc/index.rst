@@ -34,14 +34,10 @@ Modulegraph2 supports Python 3.6 and later on all platforms. The code
 is developed using Python 3.7 on macOS, but and regularly tested with
 other Python versions and on Linux and Windows.
 
-.. note::
+Windows and Linux build status:
 
-   Currently the code is only tested on macOS, testing on
-   Linux and Windows will be added soon.
-
-   Initial testing on Windows (through AppVeyor) found a number
-   of issues, I'm looking into how to debug those.
-
+.. image:: https://ci.appveyor.com/api/projects/status/ru71tpdinlr7whym?svg=true
+   :target: https://ci.appveyor.com/project/RonaldOussoren/modulegraph2
 
 Using modulegraph2
 ------------------
