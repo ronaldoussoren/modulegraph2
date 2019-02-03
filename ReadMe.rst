@@ -13,6 +13,8 @@ statement.
 Modules that from a distribution installed using pip also have
 a link to information about that distribution.
 
+There is `documentation at readthedocs <https://modulgraph2.readthedocs.io>`_
+
 Historic
 ........
 
