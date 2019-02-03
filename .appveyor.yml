@@ -1,0 +1,25 @@
+image: Visual Studio 2017
+version: '{branch}-{build}'
+branches:
+  only:
+  - default
+environment:
+  matrix:
+  - PYTHON: C:\\Python36
+    DEPS: dataclasses importlib_resources
+  - PYTHON: C:\\Python37
+    DEPS:
+build: off
+install:
+- cmd: '%PYTHON%\\python.exe -m pip install objectgraph typing_extensions wheel virtualenv %DEPS%'
+test_script:
+- cmd: '%PYTHON%\\python.exe -m unittest -v'
+notifications:
+- provider: Email
+  to:
+  - ronaldoussoren@mac.com
+  subject: 'appveyor: modulegraph'
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: false
+
