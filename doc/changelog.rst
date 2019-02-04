@@ -1,6 +1,21 @@
 Release history
 ===============
 
+2.0a2
+-----
+
+Fixed a number of issues:
+
+* Test suite now passes on Windows
+
+* Test suite now passes on Linux
+
+* Test suite now passes with Python 3.6
+
+* Implemented automated tested on Windows and Linux
+  using AppVeyor. MacOS is manually tested for
+  now as that's my main development platform.
+
 2.0a1
 -----
 
