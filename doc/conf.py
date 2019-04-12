@@ -60,6 +60,8 @@ pygments_style = "sphinx"
 #html_theme = "default"
 html_theme = "nature"
 
+html_extra_path = ["_extra"]
+
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
 html_use_smartypants = True
