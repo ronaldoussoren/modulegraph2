@@ -3,8 +3,8 @@ build:
   image: latest
 
 python:
-  version: 3.6
+  version: 3.7
   install:
-    - method: pip
-    - path: .
     - requirements: doc/requirements.txt
+    - method: pip
+      path: .
