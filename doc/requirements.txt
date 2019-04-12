@@ -1,3 +1,4 @@
 sphinx
 typing_extensions
 sphinxcontrib.blockdiag
+sphinx-sitemap
