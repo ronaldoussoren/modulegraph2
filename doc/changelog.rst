@@ -1,6 +1,11 @@
 Release history
 ===============
 
+2.0
+---
+
+* No functional changes
+
 2.0a2
 -----
 
