@@ -15,11 +15,6 @@ a link to information about that distribution.
 
 There is `documentation at readthedocs <https://modulgraph2.readthedocs.io>`_
 
-Windows and Linux build status:
-
-.. image:: https://ci.appveyor.com/api/projects/status/ru71tpdinlr7whym?svg=true
-   :target: https://ci.appveyor.com/project/RonaldOussoren/modulegraph2
-
 Historic
 ........
 

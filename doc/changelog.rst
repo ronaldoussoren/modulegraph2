@@ -6,6 +6,8 @@ Release history
 
 * No functional changes
 
+* Migrated to GitHub
+
 2.0a2
 -----
 

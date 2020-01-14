@@ -10,7 +10,7 @@ home-page = "https://modulegraph2.readthedocs.io/"
 description-file = "ReadMe.rst"
 requires = [
     "typing_extensions",
-    "objectgraph==1.0a1",
+    "objectgraph",
 
     # Backward compatiblity with Python 3.6:
     "dataclasses; python_version < '3.7'",
@@ -31,6 +31,6 @@ license = "MIT"
 
 [tool.flit.metadata.urls]
 "Documentation" = "https://modulegraph2.readthedocs.io/"
-"Source Code" = "https://bitbucket.org/ronaldoussoren/modulegraph2/src/default/"
-"Issue Tracker" = "https://bitbucket.org/ronaldoussoren/modulegraph2/issues?status=new&status=open"
+"Source Code" = "https://github.com/ronaldoussoren/modulegraph2/src/default/"
+"Issue Tracker" = "https://github.com/ronaldoussoren/modulegraph2/issues"
 "Supporting" = "https://blog.ronaldoussoren.net/support/"
