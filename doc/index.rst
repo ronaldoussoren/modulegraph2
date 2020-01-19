@@ -64,6 +64,6 @@ Development
 Online Resources
 ................
 
-* `Sourcecode repository on bitbucket <http://bitbucket.org/ronaldoussoren/modulegraph2/>`_
+* `Sourcecode repository on GitHub <https://github.com/ronaldoussoren/modulegraph2/>`_
 
-* `The issue tracker <http://bitbucket.org/ronaldoussoren/modulegraph2/issues>`_
+* `The issue tracker <https://github.com/ronaldoussoren/modulegraph2/issues>`_
