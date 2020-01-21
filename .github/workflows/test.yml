@@ -20,7 +20,7 @@ jobs:
         with:
           path: ~/.cache/pip
           key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/setup.py')
+            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml')
             }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.python-version }}-
@@ -31,7 +31,7 @@ jobs:
         with:
           path: ~/Library/Caches/pip
           key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/setup.py')
+            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml')
             }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.python-version }}-
@@ -42,7 +42,7 @@ jobs:
         with:
           path: ~\AppData\Local\pip\Cache
           key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/setup.py')
+            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml')
             }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.python-version }}-
