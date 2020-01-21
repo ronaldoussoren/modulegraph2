@@ -15,6 +15,12 @@ a link to information about that distribution.
 
 There is `documentation at readthedocs <https://modulgraph2.readthedocs.io>`_
 
+CI Status
+.........
+
+* image:: https://github.com/ronaldoussoren/modulegraph2/workflows/Lint/badge.svg
+* image:: https://github.com/ronaldoussoren/modulegraph2/workflows/Test/badge.svg
+
 Historic
 ........
 
