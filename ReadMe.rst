@@ -13,7 +13,7 @@ statement.
 Modules that from a distribution installed using pip also have
 a link to information about that distribution.
 
-There is `documentation at readthedocs <https://modulegraph2.readthedocs.io>`_
+There is `documentation at readthedocs <https://modulegraph2.readthedocs.io/>`_
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
