@@ -1,6 +1,11 @@
 Release history
 ===============
 
+2.0.1
+-----
+
+* #11: ``ModuleGraph.add_script`` did not work reliably
+
 2.0
 ---
 
