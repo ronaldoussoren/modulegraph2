@@ -1,10 +1,13 @@
 Release history
 ===============
 
-2.0.1
+2.1
 -----
 
 * #11: ``ModuleGraph.add_script`` did not work reliably
+
+* Add support for the way setuptools locates vendored
+  packages (``setuptools.extern.VendorImporter``)
 
 2.0
 ---
