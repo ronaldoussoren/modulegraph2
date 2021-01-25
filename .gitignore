@@ -17,3 +17,5 @@ htmlcov
 .DS_Store
 .tox
 .mypy_cache
+venv/
+.idea/
