@@ -450,8 +450,8 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         """
         node: BaseNode
 
-        assert not module_name.startswith(".")
-        assert self.find_node(module_name) is None
+        assert not module_name.startswith("."), f'module_name must not start with a "."'
+        assert self.find_node(module_name) is None, f'"{module_name}" is already in the graph'
 
         try:
             try:
@@ -502,10 +502,10 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                 #
                 # node_for_spec on a submodule is called only after
                 # successfully calling node_for_spec on the parent package,
-                # hence we know that find_spec will be successfull and
-                # will find a pacakge with an __init__.py.
+                # hence we know that find_spec will be successful and
+                # will find a package with an __init__.py.
                 parent = module_name.rpartition(".")[0]
-                assert parent not in sys.modules
+                assert parent not in sys.modules, f'{parent} already in sys.modules'
 
                 spec = importlib.util.find_spec(parent)
                 assert spec is not None
