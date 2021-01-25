@@ -238,7 +238,7 @@ class ExcludedModule(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
@@ -254,7 +254,7 @@ class MissingModule(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
@@ -273,7 +273,7 @@ class InvalidRelativeImport(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
