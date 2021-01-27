@@ -37,7 +37,7 @@ class BaseNode:
     distribution: Optional[PyPIDistribution]
     filename: Optional[pathlib.Path]
 
-    # 3th party attribubtes, not used by modulegraph
+    # 3rd party attributes, not used by modulegraph
     extension_attributes: dict
 
     @property
@@ -238,7 +238,7 @@ class ExcludedModule(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
@@ -254,7 +254,7 @@ class MissingModule(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
@@ -273,7 +273,7 @@ class InvalidRelativeImport(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
