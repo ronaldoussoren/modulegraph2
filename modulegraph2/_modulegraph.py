@@ -79,11 +79,9 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         self._missing_hook = FirstNotNone()
         self._work_stack = []
 
-        self._global_lazy_nodes = {}
-
         # Reference to __main__ cannot be valid when multiple scripts
         # are added to the graph, just ignore this module for now.
-        self._global_lazy_nodes["__main__"] = None
+        self._global_lazy_nodes = {"__main__": None}
 
         if use_stdlib_implies:
             self.add_implies(STDLIB_IMPLIES)
@@ -106,7 +104,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         unless they are also the *distribution* attribute of a node.
 
         Args:
-          reacable: IF true only report on nodes that are reachable from
+          reachable: IF true only report on nodes that are reachable from
             a graph root, otherwise report on all nodes.
         """
         seen: Set[str] = set()
@@ -251,7 +249,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         """
         Add a hook function to be ran whenever a node is fully processed.
 
-        It is possible to add multip hooks by calling this method
+        It is possible to add multiple hooks by calling this method
         multiple times.
 
         Args:
@@ -284,7 +282,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         provide a node.
 
         Args:
-          imoprting_module: The node that triggered the import.
+          importing_module: The node that triggered the import.
 
           module_name: The name that cannot be resolved.
 
@@ -303,12 +301,12 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
     def add_excludes(self, excluded_names: Iterator[str]) -> None:
         """
-        Exclude the names in "excludeded_names" from the graph
+        Exclude the names in "excluded_names" from the graph
 
         Excluded names can end up as :class:`ExcludedNode` nodes in the
         graph, but the dependencies of the actual module are not gathered.
 
-        * excluded_names: An interator yielding names to exclude.
+        * excluded_names: An iterator yielding names to exclude.
         """
         if isinstance(excluded_names, str):
             raise TypeError(f"{excluded_names!r} is not a sequence of strings")
@@ -669,10 +667,9 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         Returns:
           The node for *importing_module*.
         """
-        node: Optional[BaseNode] = None
         parent_node: Optional[BaseNode]
 
-        node = self._find_module(module_name)
+        node: Optional[BaseNode] = self._find_module(module_name)
         if node is not None:
             return node
 
@@ -804,7 +801,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         Process the name list for an import statement ('from ... import name_list').
 
         If *imported_module* is a package any imported names are assumed to
-        be modules, unless there is clear evidence to the contrarary. For regular
+        be modules, unless there is clear evidence to the contrary. For regular
         modules any imported names are assumed to refer to data (and won't
         result in :class:`MissingModule` nodes in the graph when names cannot
         be located).
