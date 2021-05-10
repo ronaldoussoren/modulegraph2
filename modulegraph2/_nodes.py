@@ -3,7 +3,7 @@ import importlib.abc
 import os
 import pathlib
 from typing import List, Optional, Set
-
+from types import CodeType
 from ._distributions import PyPIDistribution
 
 
@@ -36,6 +36,7 @@ class BaseNode:
     loader: Optional[importlib.abc.Loader]
     distribution: Optional[PyPIDistribution]
     filename: Optional[pathlib.Path]
+    code: Optional[CodeType]
 
     # 3th party attribubtes, not used by modulegraph
     extension_attributes: dict
@@ -61,7 +62,7 @@ class Script(BaseNode):
     globals_written: Set[str]
     globals_read: Set[str]
 
-    def __init__(self, filename: os.PathLike):
+    def __init__(self, filename: os.PathLike, code: Optional[CodeType]=None):
         name = os.fspath(filename)
         path = pathlib.Path(filename).resolve()
 
@@ -70,6 +71,7 @@ class Script(BaseNode):
             loader=None,
             distribution=None,
             filename=path,
+            code=code,
             extension_attributes={},
         )
         self.globals_read = set()
@@ -243,6 +245,7 @@ class ExcludedModule(BaseNode):
             loader=None,
             distribution=None,
             filename=None,
+            code=None,
             extension_attributes={},
         )
 
@@ -259,6 +262,7 @@ class MissingModule(BaseNode):
             loader=None,
             distribution=None,
             filename=None,
+            code=None,
             extension_attributes={},
         )
 
@@ -278,6 +282,7 @@ class InvalidRelativeImport(BaseNode):
             loader=None,
             distribution=None,
             filename=None,
+            code=None,
             extension_attributes={},
         )
 
@@ -297,12 +302,13 @@ class VirtualNode(BaseNode):
 
     providing_module: BaseNode
 
-    def __init__(self, module_name, providing_module):
+    def __init__(self, module_name, providing_module, code: Optional[CodeType]=None):
         super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
             filename=None,
+            code=code,
             extension_attributes={},
         )
         self.providing_module = providing_module
@@ -327,6 +333,7 @@ class AliasNode(BaseNode):
             loader=None,
             distribution=None,
             filename=None,
+            code=None,
             extension_attributes={},
         )
         self.actual_module = actual_module
