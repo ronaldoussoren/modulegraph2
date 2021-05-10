@@ -5,6 +5,7 @@ import ast
 import importlib.abc
 import importlib.machinery
 import pathlib
+from types import CodeType
 import zipfile
 import zipimport
 from typing import Iterable, List, Optional, Tuple, Type, cast
@@ -229,6 +230,7 @@ def node_for_spec(
 
         ast_imports: Optional[Iterable[ImportInfo]]
         node_type: Optional[Type[Module]] = None
+        code: Optional[CodeType]
 
         if source_code is not None:
             filename = spec.origin
@@ -287,6 +289,7 @@ def node_for_spec(
             ),
             globals_written=names_written,
             globals_read=names_read,
+            code=code,
         )
 
         if ast_imports is not None:

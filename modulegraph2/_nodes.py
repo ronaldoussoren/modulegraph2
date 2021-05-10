@@ -3,7 +3,7 @@ import importlib.abc
 import os
 import pathlib
 from typing import List, Optional, Set
-
+from types import CodeType
 from ._distributions import PyPIDistribution
 
 
@@ -36,6 +36,7 @@ class BaseNode:
     loader: Optional[importlib.abc.Loader]
     distribution: Optional[PyPIDistribution]
     filename: Optional[pathlib.Path]
+    code: Optional[CodeType]
 
     # 3th party attribubtes, not used by modulegraph
     extension_attributes: dict
