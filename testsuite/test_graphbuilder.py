@@ -1,3 +1,4 @@
+import importlib
 import importlib.machinery
 import os
 import pathlib
@@ -36,19 +37,18 @@ class TestContainsData(unittest.TestCase):
     def setUpClass(cls):
         util.clear_sys_modules(NODEBUILDER_TREE)
 
-    @classmethod
-    def tearDownClass(cls):
-        util.clear_sys_modules(NODEBUILDER_TREE)
-
-    def setUp(self):
         subprocess.check_call(
             [sys.executable, "setup.py", "build_zipfile"], cwd=NODEBUILDER_TREE
         )
 
         sys.path.insert(0, os.path.join(NODEBUILDER_TREE, "packages.zip"))
         sys.path.insert(0, NODEBUILDER_TREE)
+        importlib.invalidate_caches()
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
+        util.clear_sys_modules(NODEBUILDER_TREE)
+
         assert sys.path[0] == NODEBUILDER_TREE
         del sys.path[0]
 
@@ -56,6 +56,7 @@ class TestContainsData(unittest.TestCase):
         del sys.path[0]
 
         os.unlink(os.path.join(NODEBUILDER_TREE, "packages.zip"))
+        importlib.invalidate_caches()
 
     def test_importlib(self):
         self.assertTrue(resources.is_resource("datapackage2.subdir", "data.txt"))
@@ -138,6 +139,8 @@ class TestNodeBuilder(unittest.TestCase):
         sys.path.insert(0, os.path.join(NODEBUILDER_TREE, "packages.zip"))
         sys.path.insert(0, NODEBUILDER_TREE)
 
+        util.clear_sys_modules(NODEBUILDER_TREE)
+
     @classmethod
     def tearDownClass(cls):
         cls._remove_artefacts()
@@ -203,9 +206,12 @@ class TestNodeBuilder(unittest.TestCase):
 
     def test_bytecode_module(self):
         # Module with only a PYC file
-        spec = importlib.util.find_spec("bytecode_module")
+        try:
+            spec = importlib.util.find_spec("bytecode_module")
 
-        node, imports = graphbuilder.node_for_spec(spec, sys.path)
+            node, imports = graphbuilder.node_for_spec(spec, sys.path)
+        except:
+            breakpoint()
 
         self.assertIsInstance(node, BytecodeModule)
         self.assertEqual(node.name, "bytecode_module")

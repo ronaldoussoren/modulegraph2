@@ -180,12 +180,12 @@ class NamespacePackage(BaseNode):
 
     @property
     def globals_written(self):
-        """ Always an empty set """
+        """Always an empty set"""
         return frozenset()
 
     @property
     def globals_read(self):
-        """ Always an empty set """
+        """Always an empty set"""
         return frozenset()
 
 
@@ -222,12 +222,12 @@ class Package(BaseNode):
 
     @property
     def globals_written(self):
-        """ The globals written to by the module __init__ """
+        """The globals written to by the module __init__"""
         return self.init_module.globals_written
 
     @property
     def globals_read(self):
-        """ The globals read from by the module __init__ """
+        """The globals read from by the module __init__"""
         return self.init_module.globals_read
 
 

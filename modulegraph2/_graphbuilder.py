@@ -2,9 +2,11 @@
 Tools for building the module graph
 """
 import ast
+import importlib
 import importlib.abc
 import importlib.machinery
 import pathlib
+import sys
 import zipfile
 import zipimport
 from typing import Iterable, List, Optional, Tuple, Type, cast
@@ -342,11 +344,25 @@ def node_for_spec(
                 # are not present, such as some Linux distributions.
                 return MissingModule(actual_name), ()
 
+            if moved_spec.name == spec.name:
+                del sys.modules[actual_name]
+                importlib.invalidate_caches()
+                moved_spec = importlib.util.find_spec(actual_name)
+                if moved_spec is None:
+                    # The moved-to name doesn't actually exist. This
+                    # can happen on systems where parts of the stdlib
+                    # are not present, such as some Linux distributions.
+                    return MissingModule(actual_name), ()
+
+            assert (
+                spec.name != moved_spec.name
+            ), f"Spec and moved_spec are the same ({spec.name})"
+
             return node_for_spec(moved_spec, path)
 
-    elif (
-        type(loader).__name__ == "VendorImporter"
-        and type(loader).__module__ == "setuptools.extern"
+    elif type(loader).__name__ == "VendorImporter" and type(loader).__module__ in (
+        "setuptools.extern",
+        "pkg_resources.extern",
     ):
         # Support for ``setuptools.extern.VendorLoader`` in setuptools.
         # This loader loads names names in the ``setuptools.extern`` virtual
@@ -354,6 +370,9 @@ def node_for_spec(
         # path, whichever is available.
         #
         # That logic is reproduced here.
+        #
+        # The code also works with ``pkg_resources.extern.VendorImporter``,
+        # which uses the same mechanism.
 
         root_name: str
         vendor_pkg: str
@@ -368,12 +387,21 @@ def node_for_spec(
 
         try:
             moved_spec = importlib.util.find_spec(f"{vendor_pkg}.{relative_name}")
+            if moved_spec is not None and moved_spec.name == spec.name:
+                # In pkg_resources the *vendor_pkg* points to the *root_name*
+                # in sys.path. Below is a crude hack to work arount that...
+                del sys.modules[f"{vendor_pkg}.{relative_name}"]
+                importlib.invalidate_caches()
+                moved_spec = importlib.util.find_spec(f"{vendor_pkg}.{relative_name}")
         except ModuleNotFoundError:
             moved_spec = importlib.util.find_spec(relative_name)
 
         if moved_spec is None:
-            return MissingModule(actual_name), ()
+            return MissingModule(f"{vendor_pkg}.{relative_name}"), ()
 
+        assert (
+            spec.name != moved_spec.name
+        ), f"Spec and moved_spec are the same ({spec.name})"
         return node_for_spec(moved_spec, path)
 
     else:

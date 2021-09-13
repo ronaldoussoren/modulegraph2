@@ -1,6 +1,19 @@
 Release history
 ===============
 
+2.2
+---
+
+* Enhance the support for setuptools vendored packages
+  to also work with pkg_resources (which uses the same
+  mechanism).
+
+* Fix graphbuilding problem when using "setuptools",
+  "pkg_resources" or "six".
+
+* Fix test failures with recent python versions, failures
+  were due to imperfect test hygiene.
+
 2.1
 -----
 

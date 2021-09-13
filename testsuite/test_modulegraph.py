@@ -81,12 +81,12 @@ class TestModuleGraphScripts(unittest.TestCase, util.TestMixin):
             node = mg.find_node("setuptools.extern.six.moves.configparser")
             self.assertIsInstance(node, AliasNode)
 
-        self.assert_has_edge(
-            mg,
-            "setuptools.extern.six.moves.configparser",
-            "configparser",
-            {DependencyInfo(False, True, False, None)},
-        )
+            self.assert_has_edge(
+                mg,
+                "setuptools.extern.six.moves.configparser",
+                "configparser",
+                {DependencyInfo(False, True, False, None)},
+            )
 
         node = mg.find_node("setuptools._vendor.packaging")
         self.assertIsInstance(node, Package)
@@ -761,9 +761,7 @@ class TestModuleGraphAbsoluteImports(unittest.TestCase, util.TestMixin):
         self.assertEqual(mg.find_node("pkg_c").globals_written, {"e"})
         self.assertEqual(mg.find_node("pkg_b").globals_written, {"e"})
         self.assertEqual(mg.find_node("pkg_a").globals_written, {"e"})
-        self.assertEqual(
-            mg.find_node("from_implicit_package_import_star").globals_written, {"a"}
-        )
+        self.assertEqual(mg.find_node("multi_level_star_import").globals_written, {"e"})
 
         self.assert_has_roots(mg, "multi_level_star_import")
         self.assert_has_nodes(
