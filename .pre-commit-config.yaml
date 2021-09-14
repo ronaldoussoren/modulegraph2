@@ -2,7 +2,7 @@ default_language_version:
     python: python3.9
 repos:
   - repo: https://github.com/psf/black
-    rev: master
+    rev: 21.9b0
     hooks:
       - id: black
         # override until resolved: https://github.com/ambv/black/issues/402
@@ -11,7 +11,7 @@ repos:
         exclude: ^testsuite/.*/
 
   - repo: https://gitlab.com/pycqa/flake8
-    rev: master
+    rev: 3.9.2
     hooks:
       - id: flake8
         exclude: ^testsuite/.*/
@@ -25,20 +25,20 @@ repos:
         - flake8-todo
 
   - repo: https://github.com/pre-commit/mirrors-isort
-    rev: master
+    rev: v5.9.3
     hooks:
       - id: isort
         exclude: ^testsuite/.*/
         additional_dependencies: [toml]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: master
+    rev: v0.910
     hooks:
     - id: mypy
       exclude: ^testsuite/.*/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: master
+    rev: v4.0.1
     hooks:
       - id: trailing-whitespace
         exclude: ^testsuite/.*/
