@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import unittest
+from types import CodeType
 
 try:
     import importlib.resources as resources
@@ -169,6 +170,7 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertEqual(node.extension_attributes, {})
         self.assertEqual(node.globals_written, set())
         self.assertEqual(node.globals_read, set())
+        self.assertIs(node.code, None)
 
     def test_frozen(self):
         spec = importlib.util.find_spec("_frozen_importlib")
@@ -182,6 +184,7 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertIsNot(node.loader, None)
         self.assertIs(node.distribution, None)
         self.assertIs(node.filename, None)
+        self.assertIsInstance(node.code, CodeType)
 
         self.assertEqual(node.extension_attributes, {})
 
@@ -193,6 +196,7 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertIsInstance(node, SourceModule)
         self.assertEqual(node.name, "simple_source")
         self.assertEqual(node.identifier, "simple_source")
+        self.assertIsInstance(node.code, CodeType)
 
         self.assertIsNot(node.loader, None)
         self.assertIs(node.distribution, None)
@@ -206,16 +210,14 @@ class TestNodeBuilder(unittest.TestCase):
 
     def test_bytecode_module(self):
         # Module with only a PYC file
-        try:
-            spec = importlib.util.find_spec("bytecode_module")
+        spec = importlib.util.find_spec("bytecode_module")
 
-            node, imports = graphbuilder.node_for_spec(spec, sys.path)
-        except:
-            breakpoint()
+        node, imports = graphbuilder.node_for_spec(spec, sys.path)
 
         self.assertIsInstance(node, BytecodeModule)
         self.assertEqual(node.name, "bytecode_module")
         self.assertEqual(node.identifier, "bytecode_module")
+        self.assertIsInstance(node.code, CodeType)
 
         self.assertIsNot(node.loader, None)
         self.assertIs(node.distribution, None)
@@ -235,6 +237,7 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertIsInstance(node, ExtensionModule)
         self.assertEqual(node.name, "extension")
         self.assertEqual(node.identifier, "extension")
+        self.assertIs(node.code, None)
 
         self.assertIsNot(node.loader, None)
         self.assertIs(node.distribution, None)
@@ -357,6 +360,7 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertEqual(node.extension_attributes, {})
         self.assertEqual(node.globals_written, {"__doc__"})
         self.assertEqual(node.globals_read, set())
+        self.assertIsInstance(node.code, CodeType)
 
     def test_zipfile_package(self):
         spec = importlib.util.find_spec("zfpackage")

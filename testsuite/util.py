@@ -4,6 +4,7 @@ Testing utilities
 import importlib
 import os
 import sys
+from types import CodeType
 
 from modulegraph2 import Script
 
@@ -30,6 +31,7 @@ class TestMixin:
         self.assertEqual(node.filename, script_file)
         self.assertIs(node.distribution, None)
         self.assertIs(node.loader, None)
+        self.assertIsInstance(node.code, CodeType)
         self.assertEqual(node.extension_attributes, {})
 
     def assert_has_node(self, mg, node_name, node_class=None):

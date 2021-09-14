@@ -14,7 +14,7 @@ class import_name(str):
 
     __slots__ = ["asname"]
 
-    asname: Optional[str]
+    asname: Optional[str]  # Renamed name from an "as" clause
 
     @classmethod
     def from_tuple(cls, name_tuple: Tuple[str, Optional[str]]):

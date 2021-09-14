@@ -597,7 +597,14 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         )
         imports = extract_ast_info(ast_node)
 
-        node = Script(os.fspath(script_path))
+        code = compile(
+            source_code,
+            os.fspath(script_path),
+            "exec",
+            dont_inherit=True,
+        )
+
+        node = Script(os.fspath(script_path), code)
         self.add_node(node)
         self._process_import_list(node, imports)
         return node

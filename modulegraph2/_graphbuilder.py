@@ -198,6 +198,7 @@ def node_for_spec(
             filename=None,
             globals_read=set(),
             globals_written=set(),
+            code=None,
         )
         imports = ()
 
@@ -214,6 +215,7 @@ def node_for_spec(
             else None,
             globals_read=set(),
             globals_written=set(),
+            code=None,
         )
         imports = ()
 
@@ -262,6 +264,7 @@ def node_for_spec(
             bytecode_imports = []
             names_written = set()
             names_read = set()
+            code = None
 
         if node_type is None:
             if loader == importlib.machinery.FrozenImporter:
@@ -289,6 +292,7 @@ def node_for_spec(
             ),
             globals_written=names_written,
             globals_read=names_read,
+            code=code,
         )
 
         if ast_imports is not None:
@@ -323,6 +327,7 @@ def node_for_spec(
                     filename=None,
                     globals_written=set(SIX_MOVES_GLOBALS),
                     globals_read=set(),
+                    code=None,
                 ),
             )
             return node, ()

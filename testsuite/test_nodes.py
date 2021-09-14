@@ -30,7 +30,8 @@ class TestNodes(unittest.TestCase):
         # Use the full name of an existing script to avoid problems
         # on Windows
         n = nodes.Script(
-            pathlib.Path(__file__).parent / "modulegraph-dir" / "trivial-script"
+            pathlib.Path(__file__).parent / "modulegraph-dir" / "trivial-script",
+            42,
         )
         self.assertEqual(
             n.name,
@@ -45,6 +46,7 @@ class TestNodes(unittest.TestCase):
 
         self.assertIs(n.loader, None)
         self.assertIs(n.distribution, None)
+        self.assertEqual(n.code, 42)
         self.assertEqual(n.extension_attributes, {})
 
     def test_alias_node(self):
@@ -111,6 +113,7 @@ class TestNodes(unittest.TestCase):
                     extension_attributes={},
                     globals_written={"a", "b", "c"},
                     globals_read={"c", "d"},
+                    code=42,
                 )
 
                 self.assertEqual(n.name, "module")
@@ -120,6 +123,7 @@ class TestNodes(unittest.TestCase):
                 self.assertEqual(n.extension_attributes, {})
                 self.assertEqual(n.globals_written, {"a", "b", "c"})
                 self.assertEqual(n.globals_read, {"c", "d"})
+                self.assertEqual(n.code, 42)
 
                 self.assertFalse(n.uses_dunder_import)
                 self.assertFalse(n.uses_dunder_file)
@@ -168,6 +172,7 @@ class TestNodes(unittest.TestCase):
             extension_attributes={},
             globals_written={"a"},
             globals_read={"b"},
+            code=None,
         )
 
         n = nodes.Package(

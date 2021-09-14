@@ -2,6 +2,7 @@ import dataclasses
 import importlib.abc
 import os
 import pathlib
+from types import CodeType
 from typing import List, Optional, Set
 
 from ._distributions import PyPIDistribution
@@ -56,12 +57,23 @@ class Script(BaseNode):
 
     The name of the node is the string representation
     of the full filename of the script.
+
+    Attributes:
+      globals_written
+        Global varialbles written to
+
+      globals_read
+        Global variables read from
+
+      code
+        Code object for the script
     """
 
     globals_written: Set[str]
     globals_read: Set[str]
+    code: Optional[CodeType]
 
-    def __init__(self, filename: os.PathLike):
+    def __init__(self, filename: os.PathLike, code: Optional[CodeType]):
         name = os.fspath(filename)
         path = pathlib.Path(filename).resolve()
 
@@ -74,6 +86,7 @@ class Script(BaseNode):
         )
         self.globals_read = set()
         self.globals_written = set()
+        self.code = code
 
 
 @dataclasses.dataclass
@@ -87,10 +100,14 @@ class Module(BaseNode):
 
       globals_read
         Set of global names read by the module
+
+      code
+        Code for the module
     """
 
     globals_written: Set[str]
     globals_read: Set[str]
+    code: Optional[CodeType]
 
     @property
     def uses_dunder_import(self) -> bool:
