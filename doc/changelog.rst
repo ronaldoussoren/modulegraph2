@@ -14,6 +14,10 @@ Release history
 * Fix test failures with recent python versions, failures
   were due to imperfect test hygiene.
 
+* Add a *code* attribute to :class:`modulegraph2.Script`
+  and :class:`modulegraph2.Module`, containing the compiled
+  bytecode for the module (or *None*)
+
 2.1
 -----
 

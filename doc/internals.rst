@@ -97,9 +97,6 @@ Private API
 
 .. autofunction:: modulegraph2._distributions.distribution_for_file
 
-
-.. autofunction:: modulegraph2._depinfo.from_importinfo
-
 Module "_dotbuilder": Outputting graphviz files
 -----------------------------------------------
 
@@ -146,7 +143,6 @@ Module "_importinfo": Information about edges in the dependency graph
 
 .. automodule:: modulegraph2._importinfo
    :members:
-   :undoc-members:
 
 Module "_modulegraph": The main module graph and builder
 --------------------------------------------------------

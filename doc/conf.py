@@ -105,8 +105,8 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("http://docs.python.org/", None),
-    "objectgraph": ("http://objectgraph.readthedocs.io/", None),
+    "python": ("https://docs.python.org/", None),
+    "objectgraph": ("https://objectgraph.readthedocs.io/", None),
 }
 
 todo_include_todos = True
