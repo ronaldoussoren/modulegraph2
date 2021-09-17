@@ -1,3 +1,4 @@
+setuptools==49.2.1
 objectgraph
 sphinx
 typing_extensions
