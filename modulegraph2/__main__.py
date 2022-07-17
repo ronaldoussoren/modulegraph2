@@ -304,7 +304,7 @@ def format_graph(args: argparse.Namespace, mg: ModuleGraph) -> None:
 
         except OSError as exc:
             print(exc, file=sys.stderr)
-            raise SystemExit(1)
+            raise SystemExit(1) from exc
 
 
 def main(argv: List[str]) -> None:

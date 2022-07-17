@@ -97,8 +97,8 @@ latex_documents = [
     (
         "index",
         "modulegraph2.tex",
-        u"modulegraph2 Documentation",
-        u"Ronald Oussoren",
+        "modulegraph2 Documentation",
+        "Ronald Oussoren",
         "manual",
     )
 ]

@@ -86,7 +86,6 @@ if hasattr(sys, "real_prefix"):
         else:
             return path
 
-
 else:  # pragma: nocover (tests run in virtualenv)
 
     # Running outside of a virtualenv environment
