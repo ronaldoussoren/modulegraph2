@@ -1,10 +1,12 @@
 Release history
 ===============
 
-2.3
----
+2.2.1
+-----
 
 * Fix incompatibility with recent setuptools versions
+
+* Fix incompatibility with Python 3.11
 
 2.2
 ---

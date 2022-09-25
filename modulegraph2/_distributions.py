@@ -18,7 +18,7 @@ class PyPIDistribution:
 
     Attributes:
       identifier (str):  Unique identifier fot the distribution for use with
-                   :class:`modulegraph2.ObjectGraph`
+                         :class:`modulegraph2.ObjectGraph`
 
       name (str): Name of the distribution (as it is found on PyPI)
 

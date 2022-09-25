@@ -136,9 +136,9 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
 
         elif inst.opname == "LOAD_GLOBAL":
             const_offset = inst.arg
-            if sys.version_info[:2] > (3, 11):
-                const_offset >>= 1
             assert const_offset is not None
+            if sys.version_info[:2] >= (3, 11):
+                const_offset >>= 1
             globals_read.add(code.co_names[const_offset])
 
         elif inst.opname == "MAKE_FUNCTION":
@@ -148,10 +148,22 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
                 const_offset = instructions[offset - 2].arg
             assert const_offset is not None
 
-            if offset >= 3 and instructions[offset - 3].opname == "LOAD_BUILD_CLASS":
-                class_codes.add(code.co_consts[const_offset])
+            if sys.version_info[:2] >= (3, 11):
+                if (
+                    offset >= 2
+                    and instructions[offset - 2].opname == "LOAD_BUILD_CLASS"
+                ):
+                    class_codes.add(code.co_consts[const_offset])
+                else:
+                    func_codes.add(code.co_consts[const_offset])
             else:
-                func_codes.add(code.co_consts[const_offset])
+                if (
+                    offset >= 3
+                    and instructions[offset - 3].opname == "LOAD_BUILD_CLASS"
+                ):
+                    class_codes.add(code.co_consts[const_offset])
+                else:
+                    func_codes.add(code.co_consts[const_offset])
 
     return imports, globals_written, globals_read, func_codes, class_codes
 
