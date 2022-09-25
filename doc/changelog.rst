@@ -1,6 +1,11 @@
 Release history
 ===============
 
+2.3
+---
+
+* Fix incompatibility with recent setuptools versions
+
 2.2
 ---
 

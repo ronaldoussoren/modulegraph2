@@ -409,6 +409,22 @@ def node_for_spec(
         ), f"Spec and moved_spec are the same ({spec.name})"
         return node_for_spec(moved_spec, path)
 
+    elif type(loader).__name__ == "DistutilsLoader" and type(loader).__module__ in (
+        "_distutils_hack",
+    ):
+        # The distutils_hack loader is used by newer versions of setuptools
+        # to fully replace the stdlib version of distutils.
+        assert spec.name == "distutils", spec.name
+        del sys.modules["setuptools._distutils"]
+        importlib.invalidate_caches()
+        moved_spec = importlib.util.find_spec("setuptools._distutils")
+        if moved_spec is None:
+            return MissingModule("distutils"), ()
+        assert (
+            spec.name != moved_spec.name
+        ), f"Spec and moved_spec are the same ({spec.name})"
+        return node_for_spec(moved_spec, path)
+
     else:
         raise RuntimeError(
             f"Don't known how to handle {loader!r} for {spec.name!r}"

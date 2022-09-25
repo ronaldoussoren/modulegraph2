@@ -5,6 +5,7 @@ and the use of global names.
 """
 import collections
 import dis
+import sys
 import types
 from typing import Deque, Dict, Iterator, List, Optional, Set, Tuple
 
@@ -125,16 +126,26 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
             assert const_offset is not None
             globals_written.add(code.co_names[const_offset])
 
-        elif inst.opname in ("LOAD_GLOBAL", "LOAD_NAME"):
-            if is_class_code and inst.opname == "LOAD_NAME":
+        elif inst.opname == "LOAD_NAME":
+            if is_class_code:
                 continue
 
             const_offset = inst.arg
             assert const_offset is not None
             globals_read.add(code.co_names[const_offset])
 
+        elif inst.opname == "LOAD_GLOBAL":
+            const_offset = inst.arg
+            if sys.version_info[:2] > (3, 11):
+                const_offset >>= 1
+            assert const_offset is not None
+            globals_read.add(code.co_names[const_offset])
+
         elif inst.opname == "MAKE_FUNCTION":
-            const_offset = instructions[offset - 2].arg
+            if sys.version_info[:2] >= (3, 11):
+                const_offset = instructions[offset - 1].arg
+            else:
+                const_offset = instructions[offset - 2].arg
             assert const_offset is not None
 
             if offset >= 3 and instructions[offset - 3].opname == "LOAD_BUILD_CLASS":
