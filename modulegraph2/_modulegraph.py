@@ -30,6 +30,7 @@ from ._distributions import PyPIDistribution, distribution_named
 from ._graphbuilder import SIX_MOVES_TO, node_for_spec, relative_package
 from ._implies import STDLIB_IMPLIES, Alias, ImpliesValueType, Virtual
 from ._importinfo import ImportInfo
+from ._mypyc_support import mypyc_post_processing_hook
 from ._nodes import (
     AliasNode,
     BaseNode,
@@ -90,6 +91,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
         if use_builtin_hooks:
             self.add_missing_hook(swig_missing_hook)
+            self.add_post_processing_hook(mypyc_post_processing_hook)
 
     #
     # Querying

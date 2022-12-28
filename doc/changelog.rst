@@ -1,6 +1,14 @@
 Release history
 ===============
 
+2.3
+---
+
+* The graph builder now knows about mypyc and scan for
+  dependencies for mypyc compiled extension modules,
+  assuming the source for the python module is shipped
+  in the distribution.
+
 2.2.1
 -----
 
