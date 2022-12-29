@@ -24,15 +24,19 @@ from ._nodes import BaseNode, ExtensionModule, Package
 # dependencies when it cannot find the python sources
 # corresponding to the extension module.
 
+seen = set()
+
 
 def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode):
+    if node.identifier in seen:
+        return
+    seen.add(node.identifier)
 
     # Look for extension modules, but standalone and
     # as the ``__init__`` for a package.
     if isinstance(node, Package):
         if not isinstance(node.init_module, ExtensionModule):
             return
-        node = node.init_module
     elif not isinstance(node, ExtensionModule):
         return
 
@@ -41,11 +45,23 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
     if node.distribution is None:
         return
 
-    if node.filename is None:
-        # This function will try to parse the source
-        # file next to the node in the filesystem, that
-        # requires knowing the filename for the node.
+    # This function will try to parse the source
+    # file next to the node in the filesystem, that
+    # requires knowing the filename for the node.
+    if isinstance(node, Package):
+        if node.init_module.filename is None:
+            return
+        else:
+            source_filename = node.init_module.filename.parent / (
+                node.init_module.filename.stem.split(".", 1)[0] + ".py"
+            )
+
+    elif node.filename is None:
         return
+    else:
+        source_filename = node.filename.parent / (
+            node.filename.stem.split(".", 1)[0] + ".py"
+        )
 
     # Finally check that the distribution appears to
     # be compiled with mypyc.
@@ -66,9 +82,6 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
     # This code assumes that the extension module is in the filesystem,
     # which should be good enough in practice (AFAIK none of the major
     # platforms support loading extension modules from memory).
-    source_filename = node.filename.parent / (
-        node.filename.stem.split(".", 1)[0] + ".py"
-    )
     if not source_filename.is_file():
         return
 
@@ -87,6 +100,7 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
 
     else:
         imports = list(extract_ast_info(ast_node))
+
     # Add explicit dependency to the mypy helper extension module
     helper_node = graph.add_module(helper_module)
     if helper_node is not None:
@@ -95,3 +109,4 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
     # And finally process the dependencies found in the source file.
     if imports:
         graph._process_import_list(node, imports)
+        graph._run_stack()

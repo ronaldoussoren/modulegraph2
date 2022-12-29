@@ -799,8 +799,6 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
         node = self._find_or_load_module(importing_module, absolute_name)
 
-        assert node is not None
-
         self.add_edge(
             importing_module,
             node,
@@ -839,12 +837,11 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                 importing_module.globals_written.update(imported_module.globals_written)
 
         else:
-            importing_module.globals_written.update(import_info.import_names)
-
             if import_info.import_names and isinstance(
                 imported_module, (Package, NamespacePackage, AliasNode, Module)
             ):
                 if isinstance(imported_module, AliasNode):
+                    importing_module.globals_written.update(import_info.import_names)
                     node = self._find_module(imported_module.actual_module)
                     assert node is not None
 
@@ -854,10 +851,12 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                     ):
                         return
 
+                importing_module.globals_written.update(import_info.import_names)
                 for nm in import_info.import_names:
                     if nm in imported_module.globals_written:
                         # Name exists as a global in the imported module,
                         # it is either a global or an imported module.
+                        found_imported = False
                         for ed_set, tgt in self.outgoing(imported_module):
                             if (
                                 any(nm == ed.imported_as for ed in ed_set)
@@ -868,8 +867,20 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                                     tgt,
                                     from_importinfo(import_info, True, nm.asname),
                                 )
+                                found_imported = True
                                 break
-                        continue
+
+                        if found_imported or isinstance(imported_module, Module):
+                            # For packages with a source or bytecode ``__init__``
+                            # the ``import_names`` attribute already contains
+                            # all from-imported names by way of the bytecode and ast
+                            # scanners.
+                            #
+                            # For packages we still want to check if there is a
+                            # submodule of the specified name, needed to properly
+                            # handle ``from . import sub_module`` in a package
+                            # ``__init__``.
+                            continue
 
                     elif isinstance(imported_module, Module):
                         # Only packages can have importable names that are sub

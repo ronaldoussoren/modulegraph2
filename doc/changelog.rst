@@ -9,6 +9,9 @@ Release history
   assuming the source for the python module is shipped
   in the distribution.
 
+* Fix missing edges in the graph when a package
+  ``__init__`` uses ``from . import sub_module``.
+
 2.2.1
 -----
 
