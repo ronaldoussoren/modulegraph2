@@ -68,6 +68,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
     """
 
     _post_processing: CallbackList[ProcessingCallback]
+    _post_processing_seen: Set[str]
     _missing_hook: FirstNotNone[MissingCallback]
     _work_stack: List[Tuple[Callable, tuple]]
     _global_lazy_nodes: Dict[str, ImpliesValueType]
@@ -77,6 +78,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
     ):
         super().__init__()
         self._post_processing = CallbackList()
+        self._post_processing_seen = set()
         self._missing_hook = FirstNotNone()
         self._work_stack = []
 
@@ -258,7 +260,9 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
         Args:
            hook: The post processing hook.  Run ``hook(self, node)``
-           when *node* is fully processed.
+           when *node* is fully processed. The hook will be run at
+           most once per node, even if recipes or hooks cause
+           re-processing of a node.
         """
         self._post_processing.add(hook)
 
@@ -624,8 +628,12 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
           imports: The imports to process
         """
 
-        # Call postprocessing hooks when all imports are processed
-        self._work_stack.append((self._post_processing, (self, node)))
+        # Call postprocessing hooks when all imports are processed,
+        # but make sure that the hooks are called at most once per
+        # node.
+        if node.identifier not in self._post_processing_seen:
+            self._post_processing_seen.add(node.identifier)
+            self._work_stack.append((self._post_processing, (self, node)))
 
         # Schedule work to process import statements.
         for info in imports:

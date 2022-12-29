@@ -27,15 +27,6 @@ from ._nodes import BaseNode, ExtensionModule, Package
 
 def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode):
 
-    # Due to the way we interact with the graph the hook can be
-    # called a second time. Detect this by adding an attribute
-    # to the extension dictionary.
-    #
-    # Longer term this should be supported by the graph itself.
-    if "modulegraph2.hook.mypyc" in node.extension_attributes:
-        return
-    node.extension_attributes["modulegraph2.hook.mypyc"] = True
-
     # Look for extension modules, but standalone and
     # as the ``__init__`` for a package.
     if isinstance(node, Package):
