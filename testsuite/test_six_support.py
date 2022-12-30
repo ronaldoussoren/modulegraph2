@@ -35,7 +35,9 @@ class TestSixSupport(unittest.TestCase, util.TestMixin):
                 "--target",
                 os.fspath(site_dir),
                 "six",
-            ]
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
         # This is a fairly crude hack to ensure that

@@ -46,11 +46,16 @@ def create_virtualenv(environment_module, workdir, name):
                 name,
             ],
             cwd=workdir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
     else:
         subprocess.check_call(
-            [sys.executable, "-m", environment_module, name], cwd=workdir
+            [sys.executable, "-m", environment_module, name],
+            cwd=workdir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
     venv_dir = os.path.join(workdir, name)
@@ -62,7 +67,9 @@ def create_virtualenv(environment_module, workdir, name):
             "install",
             "-qqq",
             "objectgraph",
-        ]
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     if sys.version_info[:2] < (3, 7):
         subprocess.check_call(
@@ -72,7 +79,9 @@ def create_virtualenv(environment_module, workdir, name):
                 "install",
                 "-qqq",
                 "dataclasses",
-            ]
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
     return venv_dir
@@ -84,7 +93,8 @@ def run_scriptlet(venv_dir):
             os.path.join(venv_dir, BIN_DIR, "python"),
             "-c",
             "import modulegraph2; mg = modulegraph2.ModuleGraph(); mg.add_module('pip'); mg.add_module('distutils'); mg.add_module('distutils.command.bdist'); mg.report()",  # noqa: B950
-        ]
+        ],
+        stderr=subprocess.DEVNULL,
     )
     lines = output.decode("utf-8").splitlines()
     assert lines[2].startswith("-----")

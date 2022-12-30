@@ -35,10 +35,10 @@ if hasattr(sys, "real_prefix"):
     site_packages = os.path.join(virtual_lib, "site-packages")
 
     def same_contents(path1: str, path2: str) -> bool:
-        with open(path1, "rb") as fp:
+        with open(path1, "rb") as fp:  # pragma: no cover
             contents1 = fp.read()
 
-        with open(path2, "rb") as fp:
+        with open(path2, "rb") as fp:  # pragma: no cover
             contents2 = fp.read()
 
         return contents1 == contents2
@@ -81,11 +81,17 @@ if hasattr(sys, "real_prefix"):
         elif norm_path == os.path.join(virtual_lib, "site.py"):
             return os.path.join(real_lib, "site.py")
 
-        elif norm_path == os.path.join(virtual_lib, "distutils"):
-            return os.path.join(real_lib, "distutils")
+        elif norm_path == os.path.join(virtual_lib, "distutils"):  # pragma: no branch
+            # This isn't needed with recenish version of virtualenv
+            return os.path.join(real_lib, "distutils")  # pragma: no cover
 
-        elif norm_path == os.path.join(virtual_lib, "distutils", "__init__.py"):
-            return os.path.join(real_lib, "distutils", "__init__.py")
+        elif norm_path == os.path.join(
+            virtual_lib, "distutils", "__init__.py"
+        ):  # pragma: no branch
+            # This isn't needed with recenish version of virtualenv
+            return os.path.join(
+                real_lib, "distutils", "__init__.py"
+            )  # pragma: no cover
 
         else:
             return path

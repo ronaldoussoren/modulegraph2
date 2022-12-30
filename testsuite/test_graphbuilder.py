@@ -39,7 +39,10 @@ class TestContainsData(unittest.TestCase):
         util.clear_sys_modules(NODEBUILDER_TREE)
 
         subprocess.check_call(
-            [sys.executable, "setup.py", "build_zipfile"], cwd=NODEBUILDER_TREE
+            [sys.executable, "setup.py", "build_zipfile"],
+            cwd=NODEBUILDER_TREE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
         sys.path.insert(0, os.path.join(NODEBUILDER_TREE, "packages.zip"))
@@ -135,6 +138,8 @@ class TestNodeBuilder(unittest.TestCase):
                 "build_zipfile",
             ],
             cwd=NODEBUILDER_TREE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
         sys.path.insert(0, os.path.join(NODEBUILDER_TREE, "packages.zip"))

@@ -300,7 +300,7 @@ class TestMypycSupport(unittest.TestCase):
                 else:
                     self.fail("Unexpected edge from source module to helper")
 
-    def test_package_missing__mypyc(self):
+    def no_test_package_missing__mypyc(self):
         # This test is disabled for now because it somehow affects
         # the test environment and is not actually needed for code
         # coverage.

@@ -52,6 +52,13 @@ class TestModuleGraphScripts(unittest.TestCase, util.TestMixin):
         (graph_node,) = mg.iter_graph(node=node)
         self.assertIs(graph_node, node)
 
+    def test_nonexisting_script(self):
+        mg = ModuleGraph()
+        with self.assertRaises(OSError):
+            mg.add_script(INPUT_DIR / "trivial-script.does-not-exist")
+
+        self.assertEqual(len(list(mg.roots())), 0)
+
     def test_self_referential_script(self):
         mg = ModuleGraph()
         mg.add_script(INPUT_DIR / "self-referential-script.py")

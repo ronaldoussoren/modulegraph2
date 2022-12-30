@@ -240,7 +240,7 @@ def make_graph(args: argparse.Namespace) -> ModuleGraph:
     Returns:
       The generated graph
     """
-    with saved_sys_path():
+    with saved_sys_path():  # pragma: no branch
         for p in args.path[::-1]:
             sys.path.insert(0, p)
 
@@ -299,7 +299,7 @@ def format_graph(args: argparse.Namespace, mg: ModuleGraph) -> None:
         print_graph(sys.stdout, args.output_format, mg)
     else:
         try:
-            with open(args.output_file, "w") as fp:
+            with open(args.output_file, "w") as fp:  # pragma: no branch
                 print_graph(fp, args.output_format, mg)
 
         except OSError as exc:

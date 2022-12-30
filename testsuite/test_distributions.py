@@ -39,7 +39,12 @@ def build_and_install(source_path, destination_path):
         if os.path.exists(os.path.join(source_path, subdir)):
             shutil.rmtree(os.path.join(source_path, subdir))
 
-    subprocess.check_call([sys.executable, "setup.py", "bdist_wheel"], cwd=source_path)
+    subprocess.check_call(
+        [sys.executable, "setup.py", "bdist_wheel"],
+        cwd=source_path,
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+    )
 
     dist_dir = os.path.join(source_path, "dist")
     for fn in os.listdir(dist_dir):
@@ -55,7 +60,17 @@ def build_and_install(source_path, destination_path):
     rewrite_record(wheel_file)
 
     subprocess.check_call(
-        [sys.executable, "-mpip", "-qqq", "install", "-t", destination_path, wheel_file]
+        [
+            sys.executable,
+            "-mpip",
+            "-qqq",
+            "install",
+            "-t",
+            destination_path,
+            wheel_file,
+        ],
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
     )
 
 
