@@ -85,8 +85,8 @@ if hasattr(sys, "real_prefix"):
             mg.add_module("distutils.command.build_ext")
 
             node = mg.find_node("distutils")
-            self.assertTrue(isinstance(node, modulegraph2.Package))
-            self.assertTrue(isinstance(node.init_module, modulegraph2.SourceModule))
+            self.assertIsInstance(node, modulegraph2.Package)
+            self.assertIsInstance(node.init_module, modulegraph2.SourceModule)
 
             self.assertEqual(
                 node.init_module.filename,

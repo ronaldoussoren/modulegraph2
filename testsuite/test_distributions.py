@@ -182,7 +182,7 @@ class TestPackageLister(unittest.TestCase):
     def test_all_distributions(self):
         seen = set()
         for dist in distributions.all_distributions(sys.path):
-            self.assertTrue(isinstance(dist, distributions.PyPIDistribution))
+            self.assertIsInstance(dist, distributions.PyPIDistribution)
             seen.add(dist.name)
 
         self.assertIn("pip", seen)
@@ -190,7 +190,7 @@ class TestPackageLister(unittest.TestCase):
 
         seen2 = set()
         for dist in distributions.all_distributions(sys.path):
-            self.assertTrue(isinstance(dist, distributions.PyPIDistribution))
+            self.assertIsInstance(dist, distributions.PyPIDistribution)
             seen2.add(dist.name)
 
         self.assertEqual(seen, seen2)
@@ -198,7 +198,7 @@ class TestPackageLister(unittest.TestCase):
     def test_distribution_named(self):
         dist = distributions.distribution_named("pip")
         self.assertIsNot(dist, None)
-        self.assertTrue(isinstance(dist, distributions.PyPIDistribution))
+        self.assertIsInstance(dist, distributions.PyPIDistribution)
         self.assertEqual(dist.name, "pip")
 
         dist = distributions.distribution_named("no-such-dist")

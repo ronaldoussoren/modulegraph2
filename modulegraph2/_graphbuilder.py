@@ -418,8 +418,8 @@ def node_for_spec(
         del sys.modules["setuptools._distutils"]
         importlib.invalidate_caches()
         moved_spec = importlib.util.find_spec("setuptools._distutils")
-        if moved_spec is None:
-            return MissingModule("distutils"), ()
+        if moved_spec is None:  # pragma: no branch
+            return MissingModule("distutils"), ()  # pragma: no cover
         assert (
             spec.name != moved_spec.name
         ), f"Spec and moved_spec are the same ({spec.name})"

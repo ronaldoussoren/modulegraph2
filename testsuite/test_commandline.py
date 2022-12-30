@@ -123,6 +123,7 @@ class TestPrinter(unittest.TestCase):
         self.mg.add_module("os")
         self.mg.add_module("faulthandler")
         self.mg.add_distribution("wheel")
+        self.mg.add_module("pickletools")
 
     def test_html_graph(self):
         fp = io.StringIO()
@@ -130,7 +131,9 @@ class TestPrinter(unittest.TestCase):
         main.print_graph(fp, main.OutputFormat.HTML, self.mg)
 
         text = fp.getvalue()
-        self.assertTrue(text.startswith("<HTML>"))
+        self.assertTrue(
+            text.startswith("<HTML>"), f"{text!r} does not start with '<HTLML>'"
+        )
 
     def test_dot_graph(self):
         fp = io.StringIO()
@@ -138,7 +141,10 @@ class TestPrinter(unittest.TestCase):
         main.print_graph(fp, main.OutputFormat.GRAPHVIZ, self.mg)
 
         text = fp.getvalue()
-        self.assertTrue(text.startswith("digraph modulegraph {"))
+        self.assertTrue(
+            text.startswith("digraph modulegraph {"),
+            f"{text!r} does not start with 'digraph modulegraph {{'",
+        )
 
     def test_dot_graph_with_structure(self):
         fp = io.StringIO()
@@ -165,7 +171,10 @@ class TestPrinter(unittest.TestCase):
         main.print_graph(fp, main.OutputFormat.GRAPHVIZ, self.mg)
 
         text = fp.getvalue()
-        self.assertTrue(text.startswith("digraph modulegraph {"))
+        self.assertTrue(
+            text.startswith("digraph modulegraph {"),
+            f"{text!r} does not start with 'digraph modulegraph {{'",
+        )
 
 
 class TestBuilder(unittest.TestCase):
@@ -187,16 +196,16 @@ class TestBuilder(unittest.TestCase):
         mg = main.make_graph(args)
 
         node = mg.find_node("global_import")
-        self.assertTrue(isinstance(node, modulegraph2.SourceModule))
+        self.assertIsInstance(node, modulegraph2.SourceModule)
 
         node = mg.find_node("circular_a")
-        self.assertTrue(isinstance(node, modulegraph2.SourceModule))
+        self.assertIsInstance(node, modulegraph2.SourceModule)
 
         node = mg.find_node("no_imports")
-        self.assertTrue(isinstance(node, modulegraph2.ExcludedModule))
+        self.assertIsInstance(node, modulegraph2.ExcludedModule)
 
         node = mg.find_node("circular_c")
-        self.assertTrue(isinstance(node, modulegraph2.ExcludedModule))
+        self.assertIsInstance(node, modulegraph2.ExcludedModule)
 
     def test_graph_no_modules(self):
         args = argparse.Namespace()
@@ -230,7 +239,7 @@ class TestBuilder(unittest.TestCase):
         roots = list(mg.roots())
 
         self.assertEqual(len(roots), 1)
-        self.assertTrue(isinstance(roots[0], modulegraph2.Script))
+        self.assertIsInstance(roots[0], modulegraph2.Script)
 
     def test_graph_scripts(self):
         args = argparse.Namespace()
@@ -273,7 +282,7 @@ class TestBuilder(unittest.TestCase):
         roots = list(mg.roots())
 
         self.assertEqual(len(roots), 1)
-        self.assertTrue(isinstance(roots[0], modulegraph2.PyPIDistribution))
+        self.assertIsInstance(roots[0], modulegraph2.PyPIDistribution)
 
     def test_graph_no_distribution(self):
         args = argparse.Namespace()
@@ -315,9 +324,8 @@ class TestFormatGraph(unittest.TestCase):
             self.assertIs(rv, None)
 
             print_graph.assert_called_once()
-            self.assertTrue(
-                isinstance(print_graph.mock_calls[-1][1][0], io.TextIOWrapper)
-            )
+            self.assertIsInstance(print_graph.mock_calls[-1][1][0], io.TextIOWrapper)
+
             self.assertEqual(print_graph.mock_calls[-1][1][0].name, args.output_file)
 
             self.assertEqual(print_graph.mock_calls[-1][1][1], args.output_format)

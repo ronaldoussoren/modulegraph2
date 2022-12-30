@@ -1128,7 +1128,7 @@ class TestModuleGraphAbsoluteImports(unittest.TestCase, util.TestMixin):
 
         self.assert_has_node(mg, "invalid_package_init", Package)
         node = mg.find_node("invalid_package_init")
-        self.assertTrue(isinstance(node.init_module, InvalidModule))
+        self.assertIsInstance(node.init_module, InvalidModule)
 
     def test_invalid_package_init_submod(self):
         mg = ModuleGraph()
@@ -1136,7 +1136,7 @@ class TestModuleGraphAbsoluteImports(unittest.TestCase, util.TestMixin):
 
         self.assert_has_node(mg, "invalid_package_init", Package)
         node = mg.find_node("invalid_package_init")
-        self.assertTrue(isinstance(node.init_module, InvalidModule))
+        self.assertIsInstance(node.init_module, InvalidModule)
 
         self.assert_has_node(mg, "invalid_package_init.submod", SourceModule)
 
@@ -1799,12 +1799,10 @@ class TestModuleGrapDistributions(unittest.TestCase):
                 mg = ModuleGraph()
                 d = mg.add_distribution("simple-package")
 
-                self.assertTrue(isinstance(mg.find_node("toplevel"), SourceModule))
-                self.assertTrue(isinstance(mg.find_node("extension"), ExtensionModule))
-                self.assertTrue(isinstance(mg.find_node("package"), Package))
-                self.assertTrue(
-                    isinstance(mg.find_node("package.module"), SourceModule)
-                )
+                self.assertIsInstance(mg.find_node("toplevel"), SourceModule)
+                self.assertIsInstance(mg.find_node("extension"), ExtensionModule)
+                self.assertIsInstance(mg.find_node("package"), Package)
+                self.assertIsInstance(mg.find_node("package.module"), SourceModule)
                 self.assertIs(mg.find_node("package.__init__"), None)
 
                 self.assertEqual(d.name, "simple-package")
@@ -1830,12 +1828,10 @@ class TestModuleGrapDistributions(unittest.TestCase):
                 mg = ModuleGraph()
                 d = mg.add_distribution(dist)
 
-                self.assertTrue(isinstance(mg.find_node("toplevel"), SourceModule))
-                self.assertTrue(isinstance(mg.find_node("extension"), ExtensionModule))
-                self.assertTrue(isinstance(mg.find_node("package"), Package))
-                self.assertTrue(
-                    isinstance(mg.find_node("package.module"), SourceModule)
-                )
+                self.assertIsInstance(mg.find_node("toplevel"), SourceModule)
+                self.assertIsInstance(mg.find_node("extension"), ExtensionModule)
+                self.assertIsInstance(mg.find_node("package"), Package)
+                self.assertIsInstance(mg.find_node("package.module"), SourceModule)
                 self.assertIs(mg.find_node("package.__init__"), None)
 
                 self.assertIs(d, dist)

@@ -82,7 +82,7 @@ class TestSWIGSupport(unittest.TestCase):
         value = mg.find_node(node)
         self.assertIsNot(value, None)
         if node_type is not None:
-            self.assertTrue(isinstance(value, node_type))
+            self.assertIsInstance(value, node_type)
 
     def test_toplevel(self):
         with prefixed_sys_path(INPUT_DIR / "toplevel"):

@@ -24,14 +24,8 @@ from ._nodes import BaseNode, ExtensionModule, Package
 # dependencies when it cannot find the python sources
 # corresponding to the extension module.
 
-seen = set()
-
 
 def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode):
-    if node.identifier in seen:
-        return
-    seen.add(node.identifier)
-
     # Look for extension modules, but standalone and
     # as the ``__init__`` for a package.
     if isinstance(node, Package):
@@ -49,15 +43,19 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
     # file next to the node in the filesystem, that
     # requires knowing the filename for the node.
     if isinstance(node, Package):
-        if node.init_module.filename is None:
-            return
+        if node.init_module.filename is None:  # pragma: no branch
+            # This should never happen, a package that
+            # was not loaded from something filesystem-like
+            return  # pragma: no cover
         else:
             source_filename = node.init_module.filename.parent / (
                 node.init_module.filename.stem.split(".", 1)[0] + ".py"
             )
 
-    elif node.filename is None:
-        return
+    elif node.filename is None:  # pragma: no branch
+        # This should never happen: A installed distribution
+        # but without a filesystem location.
+        return  # pragma: no cover
     else:
         source_filename = node.filename.parent / (
             node.filename.stem.split(".", 1)[0] + ".py"
@@ -85,6 +83,10 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
     if not source_filename.is_file():
         return
 
+    # Add explicit dependency to the mypy helper extension module
+    helper_node = graph.add_module(helper_module)
+    graph.add_edge(node, helper_node, DependencyInfo(False, True, False, None))
+
     source_code = source_filename.read_bytes()
 
     try:
@@ -100,11 +102,6 @@ def mypyc_post_processing_hook(graph: "modulegraph2.ModuleGraph", node: BaseNode
 
     else:
         imports = list(extract_ast_info(ast_node))
-
-    # Add explicit dependency to the mypy helper extension module
-    helper_node = graph.add_module(helper_module)
-    if helper_node is not None:
-        graph.add_edge(node, helper_node, DependencyInfo(False, True, False, None))
 
     # And finally process the dependencies found in the source file.
     if imports:

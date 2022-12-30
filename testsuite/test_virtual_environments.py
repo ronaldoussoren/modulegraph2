@@ -103,7 +103,7 @@ class TestVirtualEnv(unittest.TestCase):
 
             for module_path in run_scriptlet(venv_dir):
                 with self.subTest(module_path):
-                    # Stdlib shoudl be outside the virtualenv, other modules should
+                    # Stdlib should be outside the virtualenv, other modules should
                     # be inside
                     if "site-packages" in module_path:
                         self.assertTrue(

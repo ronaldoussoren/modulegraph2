@@ -12,6 +12,7 @@ setup(
             "package/sub.py",
             "package/mod.py",
             "package/mod2.py",
+            "package/nodeps.py",
         ]
     ),
 )

@@ -160,8 +160,8 @@ class TestNodes(unittest.TestCase):
         self.assertEqual(n.has_data_files, False)
         self.assertEqual(n.globals_written, frozenset())
         self.assertEqual(n.globals_read, frozenset())
-        self.assertTrue(isinstance(n.globals_written, frozenset))
-        self.assertTrue(isinstance(n.globals_read, frozenset))
+        self.assertIsInstance(n.globals_written, frozenset)
+        self.assertIsInstance(n.globals_read, frozenset)
 
     def test_package(self):
         m = nodes.SourceModule(

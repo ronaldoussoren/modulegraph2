@@ -1,5 +1,4 @@
 import contextlib
-import importlib
 import os
 import pathlib
 import shutil
@@ -32,13 +31,6 @@ class TestMypycSupport(unittest.TestCase):
         self._modules = sys.modules.copy()
 
     def tearDown(self):
-        util.clear_sys_modules(INPUT_DIR)
-        sys.modules.clear()
-        sys.modules.update(self._modules)
-        importlib.invalidate_caches()
-
-    @classmethod
-    def tearDownClass(cls):
         util.clear_sys_modules(INPUT_DIR)
 
         for subdir in INPUT_DIR.iterdir():
@@ -75,25 +67,24 @@ class TestMypycSupport(unittest.TestCase):
         value = mg.find_node(node)
         self.assertIsNot(value, None)
         if node_type is not None:
-            self.assertTrue(isinstance(value, node_type))
+            self.assertIsInstance(value, node_type)
 
     def test_package(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            build_and_install(INPUT_DIR / "full-package", tmpdir)
-
             with prefixed_sys_path(tmpdir):
+                build_and_install(INPUT_DIR / "full-package", tmpdir)
+
                 mg = modulegraph2.ModuleGraph()
                 mg.add_module("package")
 
                 self.assert_has_node(mg, "package", modulegraph2.Package)
-                self.assertTrue(
-                    isinstance(
-                        mg.find_node("package").init_module,
-                        modulegraph2.ExtensionModule,
-                    )
+                self.assertIsInstance(
+                    mg.find_node("package").init_module,
+                    modulegraph2.ExtensionModule,
                 )
                 self.assert_has_node(mg, "package.sub", modulegraph2.ExtensionModule)
                 self.assert_has_node(mg, "package.mod", modulegraph2.ExtensionModule)
+                self.assert_has_node(mg, "package.nodeps", modulegraph2.ExtensionModule)
                 self.assertIs(mg.find_node("package.mod1"), None)
 
                 self.assert_has_edge(
@@ -133,21 +124,22 @@ class TestMypycSupport(unittest.TestCase):
                         self.assert_has_edge(mg, "package", node.identifier, None)
                         self.assert_has_edge(mg, "package.sub", node.identifier, None)
                         self.assert_has_edge(mg, "package.mod", node.identifier, None)
+                        self.assert_has_edge(
+                            mg, "package.nodeps", node.identifier, None
+                        )
 
     def test_package_plain_init(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            build_and_install(INPUT_DIR / "plain-init-package", tmpdir)
-
             with prefixed_sys_path(tmpdir):
+
+                build_and_install(INPUT_DIR / "plain-init-package", tmpdir)
                 mg = modulegraph2.ModuleGraph()
                 mg.add_module("package")
 
                 self.assert_has_node(mg, "package", modulegraph2.Package)
-                self.assertTrue(
-                    isinstance(
-                        mg.find_node("package").init_module,
-                        modulegraph2.SourceModule,
-                    )
+                self.assertIsInstance(
+                    mg.find_node("package").init_module,
+                    modulegraph2.SourceModule,
                 )
                 self.assert_has_node(mg, "package.sub", modulegraph2.ExtensionModule)
                 self.assert_has_node(mg, "package.mod", modulegraph2.ExtensionModule)
@@ -198,18 +190,16 @@ class TestMypycSupport(unittest.TestCase):
 
     def test_partial_package(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            build_and_install(INPUT_DIR / "partial-package", tmpdir)
-
             with prefixed_sys_path(tmpdir):
+                build_and_install(INPUT_DIR / "partial-package", tmpdir)
+
                 mg = modulegraph2.ModuleGraph()
                 mg.add_module("package")
 
                 self.assert_has_node(mg, "package", modulegraph2.Package)
-                self.assertTrue(
-                    isinstance(
-                        mg.find_node("package").init_module,
-                        modulegraph2.ExtensionModule,
-                    )
+                self.assertIsInstance(
+                    mg.find_node("package").init_module,
+                    modulegraph2.ExtensionModule,
                 )
                 self.assert_has_node(mg, "package.sub", modulegraph2.ExtensionModule)
                 self.assert_has_node(mg, "package.mod", modulegraph2.SourceModule)
@@ -261,24 +251,79 @@ class TestMypycSupport(unittest.TestCase):
 
     def test_package_no_source(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            build_and_install(INPUT_DIR / "full-package", tmpdir)
-
-            for nm in pathlib.Path(tmpdir).glob("*/*.py"):
-                nm.unlink()
-
             with prefixed_sys_path(tmpdir):
+                build_and_install(INPUT_DIR / "full-package", tmpdir)
+
+                for nm in pathlib.Path(tmpdir).glob("*/*.py"):
+                    nm.unlink()
+
                 mg = modulegraph2.ModuleGraph()
                 mg.add_module("package")
 
                 self.assert_has_node(mg, "package", modulegraph2.Package)
-                self.assertTrue(
-                    isinstance(
-                        mg.find_node("package").init_module,
-                        modulegraph2.ExtensionModule,
-                    )
+                self.assertIsInstance(
+                    mg.find_node("package").init_module,
+                    modulegraph2.ExtensionModule,
                 )
 
                 # No sources, hence dependencies cannot be found
                 self.assertIs(mg.find_node("package.sub"), None)
                 self.assertIs(mg.find_node("package.mod"), None)
                 self.assertIs(mg.find_node("package.mod1"), None)
+
+    def test_package_broken_source(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with prefixed_sys_path(tmpdir):
+                build_and_install(INPUT_DIR / "full-package", tmpdir)
+
+                with open(pathlib.Path(tmpdir) / "package" / "sub.py", "a") as stream:
+                    stream.write("1/")
+
+                mg = modulegraph2.ModuleGraph()
+                mg.add_module("package")
+
+                self.assert_has_node(mg, "package", modulegraph2.Package)
+                self.assert_has_node(mg, "package.sub", modulegraph2.ExtensionModule)
+                self.assertIsInstance(
+                    mg.find_node("package").init_module,
+                    modulegraph2.ExtensionModule,
+                )
+
+                for node in mg.nodes():
+                    if node.identifier.endswith("__mypyc"):
+                        self.assert_has_edge(mg, "package", node.identifier, None)
+                        self.assert_has_edge(mg, "package.sub", node.identifier, None)
+                try:
+                    mg.edge_data("package.sub", "os")
+                except KeyError:
+                    pass
+                else:
+                    self.fail("Unexpected edge from source module to helper")
+
+    def test_package_missing__mypyc(self):
+        # This test is disabled for now because it somehow affects
+        # the test environment and is not actually needed for code
+        # coverage.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with prefixed_sys_path(tmpdir):
+                build_and_install(INPUT_DIR / "full-package", tmpdir)
+
+                for nm in pathlib.Path(tmpdir).glob("*__mypyc.*so"):
+                    helper_name = nm.name.split(".")[0]
+                    nm.unlink()
+                    break
+                else:
+                    self.fail("Cannot remove mypyc helper extension")
+
+                mg = modulegraph2.ModuleGraph()
+                mg.add_module("package")
+
+                self.assert_has_node(mg, "package", modulegraph2.Package)
+                self.assert_has_node(mg, "package.sub", modulegraph2.ExtensionModule)
+                self.assert_has_node(mg, helper_name, modulegraph2.MissingModule)
+                self.assertIsInstance(
+                    mg.find_node("package").init_module,
+                    modulegraph2.ExtensionModule,
+                )
+
+                self.assert_has_edge(mg, "package", helper_name, None)

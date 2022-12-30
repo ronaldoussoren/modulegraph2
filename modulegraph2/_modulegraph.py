@@ -477,13 +477,13 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                     assert module_name not in sys.modules
                     sys.modules[module_name] = orig
 
-            except AttributeError as exc:
-                if "has no attribute '__path__'" in exc.args[0]:
+            except AttributeError as exc:  # pragma: no branch
+                if "has no attribute '__path__'" in exc.args[0]:  # pragma: no cover
                     # In Python 3.6 finding the spec dotted name
                     # that refers to an attribute of a module will
                     # result in an attribute error instead of returning
                     # None.
-                    spec = None
+                    spec = None  # pragma: no cover
 
                 else:  # pragma: nocover
                     raise
@@ -901,7 +901,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                             # six.moves is a virtual pseudo package that contains a
                             # number of names, some # aliases for modules, some alias
                             # for functions in other modules.
-                            # #This block handles # the latter, while the former are
+                            # This block handles the latter, while the former are
                             # handled by the graph builder.
                             if nm in SIX_MOVES_TO:
                                 # function import
@@ -912,6 +912,15 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                                     importing_module, dep_node, DEFAULT_DEPENDENCY
                                 )
                                 continue
+                        elif (
+                            isinstance(imported_module, Package)
+                            and nm in imported_module.globals_written
+                        ):
+
+                            # Trying to import a name that's one of the globals
+                            # written to, assume this is a variable or a renamed
+                            # import in the package.
+                            continue
 
                     self.add_edge(subnode, imported_module, DEFAULT_DEPENDENCY)
                     self.add_edge(
