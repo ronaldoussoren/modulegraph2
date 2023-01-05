@@ -25,8 +25,8 @@ repos:
         - flake8-todo
         - flake8-raise
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.10.1
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.11.4
     hooks:
       - id: isort
         exclude: ^testsuite/.*/
