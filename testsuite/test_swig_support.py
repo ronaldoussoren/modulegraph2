@@ -86,7 +86,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_toplevel(self):
         with prefixed_sys_path(INPUT_DIR / "toplevel"):
-
             mg = modulegraph2.ModuleGraph()
             mg.add_module("example")
 
@@ -97,7 +96,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_toplevel_without_hook(self):
         with prefixed_sys_path(INPUT_DIR / "toplevel"):
-
             mg = modulegraph2.ModuleGraph(use_builtin_hooks=False)
             mg.add_module("example")
 
@@ -108,7 +106,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_package_init(self):
         with prefixed_sys_path(INPUT_DIR / "package"):
-
             mg = modulegraph2.ModuleGraph()
             mg.add_module("using")
 
@@ -122,7 +119,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_package_init_without_hook(self):
         with prefixed_sys_path(INPUT_DIR / "package"):
-
             mg = modulegraph2.ModuleGraph(use_builtin_hooks=False)
             mg.add_module("using")
 
@@ -136,7 +132,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_package_submod(self):
         with prefixed_sys_path(INPUT_DIR / "package_submod"):
-
             mg = modulegraph2.ModuleGraph()
             mg.add_module("using")
 
@@ -151,7 +146,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_package_submod_without_hook(self):
         with prefixed_sys_path(INPUT_DIR / "package_submod"):
-
             mg = modulegraph2.ModuleGraph(use_builtin_hooks=False)
             mg.add_module("using")
 
@@ -166,7 +160,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_missing_but_not_swig(self):
         with prefixed_sys_path(INPUT_DIR / "not_swig"):
-
             mg = modulegraph2.ModuleGraph()
             mg.add_module("example")
 
@@ -179,7 +172,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_package_extension_not_found(self):
         with prefixed_sys_path(INPUT_DIR / "package_no_ext"):
-
             mg = modulegraph2.ModuleGraph()
             mg.add_module("using")
 
@@ -194,7 +186,6 @@ class TestSWIGSupport(unittest.TestCase):
 
     def test_package_extension_is_module(self):
         with prefixed_sys_path(INPUT_DIR / "package_toplevel_module"):
-
             mg = modulegraph2.ModuleGraph()
             mg.add_module("using")
 

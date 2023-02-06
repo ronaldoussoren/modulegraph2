@@ -12,7 +12,6 @@ class TestCallbackList(unittest.TestCase):
         self.assertIs(cb(1, 2, 3), None)
 
     def test_one_callback(self):
-
         args = []
 
         def cb1(a, b):
@@ -44,7 +43,6 @@ class TestCallbackList(unittest.TestCase):
         self.assertEqual(args, [])
 
     def test_multiple_callbacks(self):
-
         args = []
 
         def cb1(a, b):

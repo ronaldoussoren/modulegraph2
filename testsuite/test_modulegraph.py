@@ -81,7 +81,6 @@ class TestModuleGraphScripts(unittest.TestCase, util.TestMixin):
         import setuptools
 
         if int(setuptools.__version__.split(".")[0]) < 47:
-
             node = mg.find_node("setuptools._vendor.six.moves.configparser")
             self.assertIsInstance(node, AliasNode)
 
@@ -973,7 +972,6 @@ class TestModuleGraphAbsoluteImports(unittest.TestCase, util.TestMixin):
         self.assertIs(mg.find_node("import_from_package_with_star2.a"), None)
 
     def test_alias_in_sys_modules(self):
-
         try:
             import no_imports
 
@@ -1010,7 +1008,6 @@ class TestModuleGraphAbsoluteImports(unittest.TestCase, util.TestMixin):
             del sys.modules["no_imports"]
 
     def test_alias_in_sys_modules2(self):
-
         try:
             import no_imports
 
@@ -1942,7 +1939,6 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         self.assert_edge_count(mg, 2)
 
     def test_implied_stdlib(self):
-
         with self.subTest("using implies"):
             mg = ModuleGraph()
             mg.add_module("_curses")
@@ -2048,7 +2044,6 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         )
 
     def test_implies_vs_excludes(self):
-
         mg = ModuleGraph()
         mg.add_excludes(["no_imports"])
         mg.add_implies({"no_imports": ("sys",)})
@@ -2058,7 +2053,6 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         self.assert_has_nodes(mg, "global_import", "no_imports")
 
     def test_implies_vs_excludes2(self):
-
         mg = ModuleGraph()
         mg.add_implies({"no_imports": ("sys",)})
         mg.add_excludes(["no_imports"])
@@ -2282,7 +2276,6 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         )
 
     def test_using_missing_hook(self):
-
         missing = set()
 
         def missing_hook(graph, importing_module, module_name):

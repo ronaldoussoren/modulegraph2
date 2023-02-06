@@ -916,7 +916,6 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
                             isinstance(imported_module, Package)
                             and nm in imported_module.globals_written
                         ):
-
                             # Trying to import a name that's one of the globals
                             # written to, assume this is a variable or a renamed
                             # import in the package.

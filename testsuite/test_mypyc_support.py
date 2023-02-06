@@ -131,7 +131,6 @@ class TestMypycSupport(unittest.TestCase):
     def test_package_plain_init(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             with prefixed_sys_path(tmpdir):
-
                 build_and_install(INPUT_DIR / "plain-init-package", tmpdir)
                 mg = modulegraph2.ModuleGraph()
                 mg.add_module("package")

@@ -97,7 +97,6 @@ if hasattr(sys, "real_prefix"):
             return path
 
 else:  # pragma: nocover (tests run in virtualenv)
-
     # Running outside of a virtualenv environment
     def adjust_path(path: str) -> str:
         return path
