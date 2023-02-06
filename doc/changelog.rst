@@ -12,6 +12,9 @@ Release history
 * Fix missing edges in the graph when a package
   ``__init__`` uses ``from . import sub_module``.
 
+* Fix incompatibility with Python 3.11 when implict
+  namespace packages are used.
+
 2.2.1
 -----
 

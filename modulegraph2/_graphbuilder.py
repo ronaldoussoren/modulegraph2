@@ -168,7 +168,10 @@ def node_for_spec(
         Optional[importlib.abc.Loader], spec.loader
     )
 
-    if loader is None or type(loader).__name__ == "_NamespaceLoader":
+    if loader is None or type(loader).__name__ in (
+        "_NamespaceLoader",
+        "NamespaceLoader",
+    ):
         # Implicit namespace package
         #
         # The test for the name of the class is needed because the loader
@@ -434,7 +437,7 @@ def node_for_spec(
 
     if loader.is_package(spec.name):
         node_file = node.filename
-        assert node_file is not None
+        assert node_file is not None, (spec.name, node.filename)
 
         node_file = node_file.parent
 
