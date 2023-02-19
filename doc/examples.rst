@@ -16,3 +16,6 @@ Basic usage
 
    mg.find_node("os")
    # None
+
+   for node in mg.iter_graph():
+      print(node)
