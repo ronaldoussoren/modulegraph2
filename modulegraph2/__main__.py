@@ -205,6 +205,13 @@ def parse_arguments(argv: List[str]) -> argparse.Namespace:
         help="Add NAME to the list of module excludes",
     )
     parser.add_argument(
+        "-X",
+        "--exclude-standard_library",
+        dest="exclude_standard_library",
+        action="store_true",
+        help="Add the names of the standard library to the list of module excludes",
+    )
+    parser.add_argument(
         "-p",
         "--path",
         dest="path",
@@ -246,6 +253,8 @@ def make_graph(args: argparse.Namespace) -> ModuleGraph:
 
         mg = ModuleGraph()
         mg.add_excludes(args.excludes)
+        if args.exclude_standard_library:
+            mg.add_excludes(sys.stdlib_module_names)
 
         if args.node_type == NodeType.MODULE:
             for name in args.name:
