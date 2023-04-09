@@ -58,3 +58,15 @@ class TestFakePackage(unittest.TestCase):
     def test_construction(self):
         m = utilities.FakePackage(["some", "path"])
         self.assertEqual(m.__path__, ["some", "path"])
+
+
+class TestStdLibModuleNames(unittest.TestCase):
+    def test_stdlib_module_names(self):
+        value = utilities.stdlib_module_names()
+        self.assertIsInstance(value, list)
+        self.assertTrue(all(isinstance(x, str) for x in value))
+
+        self.assertIn("sys", value)
+        self.assertIn("os", value)
+        self.assertIn("re", value)
+        self.assertIn("asyncio", value)

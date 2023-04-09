@@ -18,6 +18,8 @@ Creating the graph
 
 .. automethod:: modulegraph2.ModuleGraph.add_module
 
+.. automethod:: modulegraph2.ModuleGraph.add_package
+
 .. automethod:: modulegraph2.ModuleGraph.add_script
 
 .. automethod:: modulegraph2.ModuleGraph.add_distribution
@@ -135,6 +137,7 @@ Utilities
 
 .. autofunction:: modulegraph2.saved_sys_path
 
+.. autofunction:: modulegraph2.stdlib_module_names
 
 .. class:: modulegraph2.Alias
 

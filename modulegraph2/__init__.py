@@ -35,7 +35,7 @@ from ._nodes import (
     SourceModule,
     VirtualNode,
 )
-from ._utilities import saved_sys_path
+from ._utilities import saved_sys_path, stdlib_module_names
 
 __all__ = (
     "Alias",
@@ -60,6 +60,7 @@ __all__ = (
     "all_distributions",
     "distribution_named",
     "saved_sys_path",
+    "stdlib_module_names",
     "Virtual",
     "VirtualNode",
 )

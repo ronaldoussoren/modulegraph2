@@ -4,6 +4,10 @@ Release history
 2.3
 ---
 
+* Add ``modulegraph2.stdlib_module_names`` and add
+  ``--exclude-stdlib`` to the standard interface to
+  exclude the stdlib from the graph.
+
 * The graph builder now knows about mypyc and scan for
   dependencies for mypyc compiled extension modules,
   assuming the source for the python module is shipped

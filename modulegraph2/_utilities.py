@@ -3,6 +3,7 @@ Some useful utility functions.
 """
 import contextlib
 import importlib
+import pathlib
 import sys
 from typing import List, Optional, Tuple
 
@@ -66,3 +67,34 @@ class FakePackage:
            path: The search path for sub modules
         """
         self.__path__ = path
+
+
+if hasattr(sys, "stdlib_module_names"):
+
+    def stdlib_module_names() -> List[str]:
+        """
+        Return a list of modules in the standard library
+        """
+        return list(sys.stdlib_module_names)  # type: ignore
+
+else:
+
+    def stdlib_module_names() -> List[str]:
+        """
+        Return a list of modules in the standard library
+        """
+        # Alternative implementation for Python 3.9 or earlier
+        # that do not have sys.stdlib_module_names. The implementation
+        # can fail for frozen applications.
+        import sysconfig
+
+        result = list(sys.builtin_module_names)
+
+        prefix = pathlib.Path(sysconfig.get_paths()["stdlib"])
+        for p in prefix.iterdir():
+            if p.suffix == ".py":
+                result.append(p.stem)
+            elif p.is_dir() and p.name.isidentifier():
+                result.append(p.name)
+
+        return result

@@ -13,7 +13,7 @@ from ._dotbuilder import export_to_dot
 from ._htmlbuilder import export_to_html
 from ._modulegraph import ModuleGraph
 from ._nodes import BaseNode
-from ._utilities import saved_sys_path
+from ._utilities import saved_sys_path, stdlib_module_names
 
 # --- Helper code for the Graphviz builder
 
@@ -133,6 +133,17 @@ class OutputFormat(enum.Enum):
     GRAPHVIZ = "dot"
 
 
+class ExtendConstAction(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, const=None, **kwargs):
+        self._const = const
+        self._dest = dest
+
+        super().__init__(option_strings, dest, nargs=0, const=const, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        getattr(namespace, self._dest).extend(self._const)
+
+
 def parse_arguments(argv: List[str]) -> argparse.Namespace:
     """
     Parse command-line arguments for the module.
@@ -203,6 +214,13 @@ def parse_arguments(argv: List[str]) -> argparse.Namespace:
         metavar="NAME",
         default=[],
         help="Add NAME to the list of module excludes",
+    )
+    parser.add_argument(
+        "--exclude-stdlib",
+        dest="excludes",
+        action=ExtendConstAction,
+        default=[],
+        const=stdlib_module_names(),
     )
     parser.add_argument(
         "-p",
