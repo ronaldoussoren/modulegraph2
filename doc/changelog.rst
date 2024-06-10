@@ -4,6 +4,10 @@ Release history
 2.3
 ---
 
+* Add `modulegraph2.Modulegraph.add_dependencies_for_source``
+  that will add the imports in a python code fragment
+  to a graph as roots.
+
 * Add ``modulegraph2.stdlib_module_names`` and add
   ``--exclude-stdlib`` to the standard interface to
   exclude the stdlib from the graph.
@@ -18,6 +22,13 @@ Release history
 
 * Fix incompatibility with Python 3.11 when implict
   namespace packages are used.
+
+* Add ``ModuleGraph.import_package`` which will add all
+  submodules of a package to the graph, without adding
+  the package to the graph roots.
+
+  This currently only supports packages found in the
+  filesystem (excluding zipfiles).
 
 2.2.1
 -----

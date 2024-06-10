@@ -2,9 +2,11 @@
 This module contains the definition of the ModuleGraph class.
 """
 import ast
+import contextlib
 import importlib
 import operator
 import os
+import pathlib
 import sys
 from types import ModuleType
 from typing import (
@@ -58,8 +60,9 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
     of python modules and scripts.
 
     The roots of the graph are those nodes that are added to the
-    graph using :meth:`add_script() <ModuleGraph.add_script>` and
-    :meth:`add_module() <ModuleGraph.add_module>`.
+    graph using :meth:`add_script() <ModuleGraph.add_script>`,
+    :meth:`add_module() <ModuleGraph.add_module>` and
+    :meth:`add_dependencies_for_source() <ModuleGraph.add_dependencies_for_source>`.
 
     Args:
       * use_stdlib_implies: Use the built-in implied actions for the stdlib.
@@ -110,7 +113,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         unless they are also the *distribution* attribute of a node.
 
         Args:
-          reacable: IF true only report on nodes that are reachable from
+          reachable: IF true only report on nodes that are reachable from
             a graph root, otherwise report on all nodes.
         """
         seen: Set[str] = set()
@@ -192,6 +195,26 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         self._run_stack()
         return node
 
+    def add_dependencies_for_source(self, source_code: str) -> None:
+        """
+        Add the modules imported by the Python code in *source_code*
+        to the graph as roots.
+
+        Args:
+            source_code: Source code for a python script or module
+        """
+        ast_node = compile(
+            source_code,
+            "-source-code-",
+            "exec",
+            flags=ast.PyCF_ONLY_AST,
+            dont_inherit=True,
+        )
+        for info in extract_ast_info(ast_node):
+            self.add_module(info.import_module)
+            for name in info.import_names:
+                self.add_module(f"{info.import_module}.{name}")
+
     def add_distribution(self, distribution: Union[PyPIDistribution, str]):
         """
         Add a package distribution to the graph, with references
@@ -229,6 +252,17 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
     # Hooks
     #
 
+    @contextlib.contextmanager
+    def hook_context(self):
+        """
+        Contextmanger that allows using hook APIs outside of a hook
+        callback.
+        """
+        try:
+            yield
+        finally:
+            self._run_stack()
+
     def import_module(self, importing_module: BaseNode, import_name: str) -> BaseNode:
         """
         Import 'import_name' and add an edge from 'module' to 'import_name'
@@ -249,6 +283,53 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
             node = self._find_or_load_module(importing_module, import_name)
 
         self.add_edge(importing_module, node, DEFAULT_DEPENDENCY)
+        return node
+
+    def import_package(self, importing_module: BaseNode, package_name: str) -> BaseNode:
+        """
+        Add all modules in a package to the graph and process imports.
+
+        Will not raise an exception for non-existing packages or when
+        the *package_name* refers to a module instead of a package.
+
+        This is an API to be used by hooks. The graph is not fully updated
+        after calling this method.
+
+        This method only supports packages that are found in the
+        filesystem.
+        Args:
+            importing_module: The module that triggers this import
+
+            package_name: Name of the package to import
+        """
+        node = self._find_module(package_name)
+        if node is None:
+            node = self._find_or_load_module(None, package_name)
+
+        self._run_stack()
+
+        if not isinstance(node, Package):
+            return node
+
+        # This is something not natively supported by
+        # importlib, because of this the function tries
+        # to find submodules by looking in the filesystem.
+        #
+        spec = importlib.util.find_spec(package_name)
+        if spec is not None:
+            for path_name in spec.submodule_search_locations or []:
+                path = pathlib.Path(path_name)
+                for fn in path.glob("*.py"):
+                    module = fn.stem
+                    if not module.isidentifier():
+                        continue
+
+                    abs_name = f"{package_name}.{module}"
+                    module_node = self._find_or_load_module(node, abs_name)
+                    self.add_edge(node, module_node, DEFAULT_DEPENDENCY)
+                    if isinstance(module_node, Package):
+                        self._work_stack.append((self.import_package, (abs_name,)))
+
         return node
 
     def add_post_processing_hook(self, hook: ProcessingCallback) -> None:
