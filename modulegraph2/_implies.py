@@ -5,7 +5,6 @@ The implies in this file are based on manual
 inspection of the stdlib sources for CPython.
 """
 
-
 import os
 import sys
 from typing import Dict, Sequence, Tuple, Union

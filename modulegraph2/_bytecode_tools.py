@@ -3,6 +3,7 @@ Tools for working with the bytecode for a module. This currently just
 defines a function for extracting information about import statements
 and the use of global names.
 """
+
 import collections
 import dis
 import sys

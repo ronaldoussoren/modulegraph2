@@ -1,6 +1,7 @@
 """
 This module contains the definition of the ModuleGraph class.
 """
+
 import ast
 import contextlib
 import importlib
