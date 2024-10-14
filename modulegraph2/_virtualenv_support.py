@@ -10,6 +10,7 @@ Note that as of virtualenv 2.0 this helper won't
 trigger because the environment is build on top
 of the stdlib "venv" library.
 """
+
 import os
 import sys
 
