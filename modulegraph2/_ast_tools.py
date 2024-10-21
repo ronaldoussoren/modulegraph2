@@ -2,6 +2,7 @@
 Tools for working with the AST for a module. This currently just defines
 a function for extracting information about import statements from the AST.
 """
+
 import ast
 import collections
 from typing import Deque, Iterator, Tuple

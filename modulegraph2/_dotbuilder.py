@@ -6,6 +6,7 @@ Export functions for creating Graphviz files.
     a generic version of this module will be added to the objectgraph
     package, with modulegraph2 specific functionality in this module.
 """
+
 from typing import Callable, Dict, Iterator, Sequence, Set, TextIO, Tuple, Union
 
 from objectgraph import EDGE_TYPE, NODE_TYPE  # , ObjectGraph
