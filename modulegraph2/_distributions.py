@@ -3,6 +3,7 @@ This module contains functions and classes that are used
 to process information about package distributions (the
 stuff on PyPI).
 """
+
 import dataclasses
 import os
 import sys

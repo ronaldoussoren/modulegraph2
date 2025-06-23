@@ -1,6 +1,7 @@
 """
 Support code that deals with SWIG.
 """
+
 import importlib.util
 import os
 import sys

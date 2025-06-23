@@ -2,6 +2,7 @@
 Support code that deals with packages compiled
 with mypyc.
 """
+
 import ast
 
 import modulegraph2

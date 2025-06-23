@@ -1,6 +1,7 @@
 """
 Commandline interface
 """
+
 import argparse
 import enum
 import functools

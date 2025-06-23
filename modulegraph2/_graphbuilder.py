@@ -1,6 +1,7 @@
 """
 Tools for building the module graph
 """
+
 import ast
 import importlib
 import importlib.abc
@@ -184,9 +185,11 @@ def node_for_spec(
             loader=loader,
             distribution=None,
             extension_attributes={},
-            filename=pathlib.Path(adjust_path(spec.origin))
-            if spec.origin is not None
-            else None,
+            filename=(
+                pathlib.Path(adjust_path(spec.origin))
+                if spec.origin is not None
+                else None
+            ),
             search_path=[pathlib.Path(loc) for loc in search_path],
             has_data_files=False,
         )
@@ -209,13 +212,17 @@ def node_for_spec(
         node = ExtensionModule(
             name=spec.name,
             loader=loader,
-            distribution=distribution_for_file(spec.origin, path)
-            if spec.origin is not None
-            else None,
+            distribution=(
+                distribution_for_file(spec.origin, path)
+                if spec.origin is not None
+                else None
+            ),
             extension_attributes={},
-            filename=pathlib.Path(adjust_path(spec.origin))
-            if spec.origin is not None
-            else None,
+            filename=(
+                pathlib.Path(adjust_path(spec.origin))
+                if spec.origin is not None
+                else None
+            ),
             globals_read=set(),
             globals_written=set(),
             code=None,
@@ -323,9 +330,11 @@ def node_for_spec(
                 init_module=FrozenModule(
                     name="@@SIX_MOVES@@",
                     loader=loader,
-                    distribution=distribution_for_file(spec.origin, path)
-                    if spec.origin is not None
-                    else None,
+                    distribution=(
+                        distribution_for_file(spec.origin, path)
+                        if spec.origin is not None
+                        else None
+                    ),
                     extension_attributes={},
                     filename=None,
                     globals_written=set(SIX_MOVES_GLOBALS),
