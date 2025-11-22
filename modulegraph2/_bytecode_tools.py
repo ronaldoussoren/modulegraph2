@@ -3,18 +3,20 @@ Tools for working with the bytecode for a module. This currently just
 defines a function for extracting information about import statements
 and the use of global names.
 """
+
 import collections
 import dis
 import sys
 import types
-from typing import Deque, Dict, Iterator, List, Optional, Set, Tuple
+from collections.abc import Iterator
+from typing import Deque
 
 from ._importinfo import ImportInfo, create_importinfo
 
 
 def _all_code_objects(
     code: types.CodeType,
-) -> Iterator[Tuple[types.CodeType, List[types.CodeType]]]:
+) -> Iterator[tuple[types.CodeType, list[types.CodeType]]]:
     """
     Yield all code objects directly and indirectly referenced from
     *code* (including *code* itself).
@@ -32,7 +34,7 @@ def _all_code_objects(
     work_q: Deque[types.CodeType] = collections.deque()
     work_q.append(code)
 
-    parents: Dict[types.CodeType, List[types.CodeType]] = {}
+    parents: dict[types.CodeType, list[types.CodeType]] = {}
 
     while work_q:
         current = work_q.popleft()
@@ -58,12 +60,12 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
     """
     instructions = list(dis.get_instructions(code))
 
-    imports: List[ImportInfo] = []
-    globals_written: Set[str] = set()
-    globals_read: Set[str] = set()
-    func_codes: Set[types.CodeType] = set()
-    class_codes: Set[types.CodeType] = set()
-    fromvalues: Optional[List[Tuple[str, Optional[str]]]]
+    imports: list[ImportInfo] = []
+    globals_written: set[str] = set()
+    globals_read: set[str] = set()
+    func_codes: set[types.CodeType] = set()
+    class_codes: set[types.CodeType] = set()
+    fromvalues: list[tuple[str, str | None]] | None
 
     for offset, inst in enumerate(instructions):
         if inst.opname == "IMPORT_NAME":
@@ -77,9 +79,12 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
 
             assert (
                 instructions[offset - from_inst_offset].opname == "LOAD_CONST"
-            ), instructions[offset - 1].opname
-            assert instructions[offset - level_inst_offset].opname == "LOAD_CONST", (
-                instructions[offset - 2].opname,
+            ), instructions[offset - from_inst_offset].opname
+            assert instructions[offset - level_inst_offset].opname in (
+                "LOAD_CONST",
+                "LOAD_SMALL_INT",
+            ), (
+                instructions[offset - level_inst_offset].opname,
                 code,
             )
 
@@ -90,7 +95,10 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
             assert level_offset is not None
 
             fromlist = code.co_consts[from_offset]
-            level = code.co_consts[level_offset]
+            if instructions[offset - level_inst_offset].opname == "LOAD_SMALL_INT":
+                level = level_offset
+            else:
+                level = code.co_consts[level_offset]
 
             assert fromlist is None or isinstance(fromlist, tuple)
 
@@ -118,8 +126,11 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
                 if fromlist is not None:
                     globals_written |= set(fromlist) - {"*"}
 
-        elif inst.opname in ("STORE_NAME", "STORE_NAME"):
-            if is_class_code and inst.opname == "STORE_NAME":
+        elif inst.opname in (
+            "STORE_NAME",
+            "STORE_GLOBAL",
+        ):
+            if is_class_code or is_function_code and inst.opname == "STORE_NAME":
                 continue
 
             const_offset = inst.arg
@@ -154,6 +165,12 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
                     and instructions[offset - 2].opname == "LOAD_BUILD_CLASS"
                 ):
                     class_codes.add(code.co_consts[const_offset])
+                if (
+                    offset >= 3
+                    and instructions[offset - 2].opname == "PUSH_NULL"
+                    and instructions[offset - 3].opname == "LOAD_BUILD_CLASS"
+                ):
+                    class_codes.add(code.co_consts[const_offset])
                 else:
                     func_codes.add(code.co_consts[const_offset])
             else:
@@ -169,7 +186,7 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
 
 
 def _is_code_for_function(
-    code: types.CodeType, parents: List[types.CodeType], func_codes: Set[types.CodeType]
+    code: types.CodeType, parents: list[types.CodeType], func_codes: set[types.CodeType]
 ):
     """
     Check if this is the code object for a function or inside a function
@@ -186,7 +203,7 @@ def _is_code_for_function(
 
 def extract_bytecode_info(
     code: types.CodeType,
-) -> Tuple[List[ImportInfo], Set[str], Set[str]]:
+) -> tuple[list[ImportInfo], set[str], set[str]]:
     """
     Extract interesting information from the code object for a module or script
 
@@ -197,11 +214,11 @@ def extract_bytecode_info(
     """
     # Note: This code is iterative to avoid exhausting the stack in
     # patalogical code bases (in particular deeply nested functions)
-    all_imports: List[ImportInfo] = []
-    all_globals_written: Set[str] = set()
-    all_globals_read: Set[str] = set()
-    all_func_codes: Set[types.CodeType] = set()
-    all_class_codes: Set[types.CodeType] = set()
+    all_imports: list[ImportInfo] = []
+    all_globals_written: set[str] = set()
+    all_globals_read: set[str] = set()
+    all_func_codes: set[types.CodeType] = set()
+    all_class_codes: set[types.CodeType] = set()
 
     for current, parents in _all_code_objects(code):
         (

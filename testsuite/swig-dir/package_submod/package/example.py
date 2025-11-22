@@ -87,7 +87,7 @@ def _swig_getattr(self, class_type, name):
     if method:
         return method(self)
     raise AttributeError(
-        "'%s' object has no attribute '%s'" % (class_type.__name__, name)
+        f"'{class_type.__name__}' object has no attribute '{name}'"
     )
 
 
@@ -96,7 +96,7 @@ def _swig_repr(self):
         strthis = "proxy of " + self.this.__repr__()
     except __builtin__.Exception:
         strthis = ""
-    return "<%s.%s; %s >" % (
+    return "<{}.{}; {} >".format(
         self.__class__.__module__,
         self.__class__.__name__,
         strthis,

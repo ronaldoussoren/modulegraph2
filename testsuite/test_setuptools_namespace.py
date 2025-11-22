@@ -1,7 +1,18 @@
 import os
 import pathlib
 import sys
+import types
 import unittest
+import warnings
+
+with warnings.catch_warnings():
+    # Pkg_resources will be removed in the near future
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    pkg_resources: types.ModuleType | None
+    try:
+        import pkg_resources
+    except ImportError:
+        pkg_resources = None
 
 import modulegraph2
 
@@ -21,6 +32,7 @@ class TestSetuptoolsNamespacePackage(unittest.TestCase):
 
         util.clear_sys_modules(INPUT_DIR)
 
+    @unittest.skipIf(pkg_resources is None, "test pkg_resources feature")
     def test_setuptools_namespace(self):
         mg = modulegraph2.ModuleGraph()
         mg.add_module("mynamespace.pkg1_mod")

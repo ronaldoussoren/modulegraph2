@@ -93,7 +93,7 @@ class TestArguments(unittest.TestCase):
             self.assertRaises(SystemExit, main.parse_arguments, ["-f", "noformat", "a"])
 
         self.assertIn(
-            "error: argument -f/--format: invalid choice: 'noformat' (choose from 'html', 'dot')",  # noqa: B950
+            "invalid choice: 'noformat'",  # noqa: B950
             stderr.getvalue(),
         )
 

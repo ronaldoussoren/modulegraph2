@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Iterable, Optional, Set, Tuple
+from collections.abc import Iterable
 
 
 class import_name(str):
@@ -14,10 +14,10 @@ class import_name(str):
 
     __slots__ = ["asname"]
 
-    asname: Optional[str]  # Renamed name from an "as" clause
+    asname: str | None  # Renamed name from an "as" clause
 
     @classmethod
-    def from_tuple(cls, name_tuple: Tuple[str, Optional[str]]):
+    def from_tuple(cls, name_tuple: tuple[str, str | None]):
         result = cls(name_tuple[0])
         result.asname = name_tuple[1]
         return result
@@ -58,7 +58,7 @@ class ImportInfo:
 
     import_module: import_name
     import_level: int
-    import_names: Set[import_name]
+    import_names: set[import_name]
     star_import: bool
     is_in_function: bool
     is_in_conditional: bool
@@ -82,8 +82,8 @@ class ImportInfo:
 
 
 def create_importinfo(
-    name: Tuple[str, Optional[str]],
-    fromlist: Optional[Iterable[Tuple[str, Optional[str]]]],
+    name: tuple[str, str | None],
+    fromlist: Iterable[tuple[str, str | None]] | None,
     level: int,
     in_def: bool,
     in_if: bool,
@@ -105,7 +105,7 @@ def create_importinfo(
     Returns:
       A newly created :class:`ImportInfo` instance.
     """
-    import_names: Set[import_name]
+    import_names: set[import_name]
 
     have_star = False
     if fromlist is None:

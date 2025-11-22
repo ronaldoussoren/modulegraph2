@@ -1,1 +1,1 @@
-from six.moves import copyreg
+import copyreg

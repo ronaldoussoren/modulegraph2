@@ -1,11 +1,12 @@
 """
 Support code that deals with SWIG.
 """
+
 import importlib.util
 import os
 import sys
 from types import ModuleType
-from typing import Optional, cast
+from typing import cast
 
 import modulegraph2
 
@@ -29,9 +30,9 @@ from ._utilities import FakePackage
 
 def swig_missing_hook(
     graph: "modulegraph2.ModuleGraph",
-    importing_module: Optional[BaseNode],
+    importing_module: BaseNode | None,
     missing_name: str,
-) -> Optional[BaseNode]:
+) -> BaseNode | None:
     """
     Hook function to be used with
     :meth:`ModuleGraph.add_missing_hook <modulegraph2.ModuleGraph.add_missing_hook>`.

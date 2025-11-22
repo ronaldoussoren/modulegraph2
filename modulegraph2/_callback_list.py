@@ -1,4 +1,5 @@
-from typing import Callable, Generic, List, TypeVar, cast
+from collections.abc import Callable
+from typing import Generic, TypeVar, cast
 
 T = TypeVar("T", bound=Callable)
 
@@ -27,7 +28,7 @@ class CallbackList(Generic[T]):
     type parameter.
     """
 
-    _callbacks: List[T]
+    _callbacks: list[T]
 
     def __init__(self):
         self._callbacks = []
@@ -78,7 +79,7 @@ class FirstNotNone(Generic[T]):
     type parameter.
     """
 
-    _callbacks: List[T]
+    _callbacks: list[T]
 
     def __init__(self):
         self._callbacks = []

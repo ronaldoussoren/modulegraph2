@@ -1,6 +1,7 @@
 """
 This module contains the definition of the ModuleGraph class.
 """
+
 import ast
 import contextlib
 import importlib
@@ -8,20 +9,9 @@ import operator
 import os
 import pathlib
 import sys
+from collections.abc import Callable, Iterable, Iterator
 from types import ModuleType
-from typing import (
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    TextIO,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import TextIO, cast
 
 from objectgraph import ObjectGraph
 
@@ -49,12 +39,12 @@ from ._swig_support import swig_missing_hook
 from ._utilities import FakePackage, split_package
 
 ProcessingCallback = Callable[["ModuleGraph", BaseNode], None]
-MissingCallback = Callable[["ModuleGraph", Optional[BaseNode], str], Optional[BaseNode]]
+MissingCallback = Callable[["ModuleGraph", BaseNode | None, str], BaseNode | None]
 
 DEFAULT_DEPENDENCY = DependencyInfo(False, True, False, None)
 
 
-class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]):
+class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
     """
     Class representing the dependency graph between a collection
     of python modules and scripts.
@@ -71,10 +61,10 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
     """
 
     _post_processing: CallbackList[ProcessingCallback]
-    _post_processing_seen: Set[str]
+    _post_processing_seen: set[str]
     _missing_hook: FirstNotNone[MissingCallback]
-    _work_stack: List[Tuple[Callable, tuple]]
-    _global_lazy_nodes: Dict[str, ImpliesValueType]
+    _work_stack: list[tuple[Callable, tuple]]
+    _global_lazy_nodes: dict[str, ImpliesValueType]
 
     def __init__(
         self, *, use_stdlib_implies: bool = True, use_builtin_hooks: bool = True
@@ -116,7 +106,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
           reachable: IF true only report on nodes that are reachable from
             a graph root, otherwise report on all nodes.
         """
-        seen: Set[str] = set()
+        seen: set[str] = set()
         for node in self.iter_graph() if reachable else self.nodes():
             if isinstance(node, PyPIDistribution):
                 continue
@@ -215,7 +205,9 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
             for name in info.import_names:
                 self.add_module(f"{info.import_module}.{name}")
 
-    def add_distribution(self, distribution: Union[PyPIDistribution, str]):
+    def add_distribution(
+        self, distribution: PyPIDistribution | str
+    ) -> PyPIDistribution | str:
         """
         Add a package distribution to the graph, with references
         to all importable names in that distribution
@@ -363,7 +355,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         self._missing_hook.add(hook)
 
     def _create_missing_module(
-        self, importing_module: Optional[BaseNode], module_name: str
+        self, importing_module: BaseNode | None, module_name: str
     ) -> BaseNode:
         """
         Create a MissingModule node for 'module_name',
@@ -388,7 +380,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         self._process_import_list(node, ())
         return node
 
-    def add_excludes(self, excluded_names: Iterator[str]) -> None:
+    def add_excludes(self, excluded_names: Iterable[str]) -> None:
         """
         Exclude the names in "excludeded_names" from the graph
 
@@ -403,7 +395,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         for nm in excluded_names:
             self._global_lazy_nodes[nm] = None
 
-    def add_implies(self, implies: Dict[str, ImpliesValueType]) -> None:
+    def add_implies(self, implies: dict[str, ImpliesValueType]) -> None:
         """
         Add implied actions for the graph.
 
@@ -453,8 +445,8 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
             func(*args)
 
     def _implied_references(
-        self, importing_module: Optional[BaseNode], module_name: str
-    ) -> Optional[BaseNode]:
+        self, importing_module: BaseNode | None, module_name: str
+    ) -> BaseNode | None:
         """
         Check implied actions for *module_name*.
 
@@ -513,7 +505,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
             return None
 
     def _load_module(
-        self, importing_module: Optional[BaseNode], module_name: str
+        self, importing_module: BaseNode | None, module_name: str
     ) -> BaseNode:
         """
         Add a node for a specific module.
@@ -720,7 +712,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         for info in imports:
             self._work_stack.append((self._process_import, (node, info)))
 
-    def _find_module(self, module_name: Union[BaseNode, str]) -> Optional[BaseNode]:
+    def _find_module(self, module_name: BaseNode | str) -> BaseNode | None:
         """
         Find a module in the graph. This is an alias for :meth:`find_node`
         that checks that the found node is actually a :class:`BaseNode`.
@@ -747,7 +739,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
     def _find_or_load_module(
         self,
-        importing_module: Optional[BaseNode],
+        importing_module: BaseNode | None,
         module_name: str,
         *,
         link_missing_to_parent: bool = True,
@@ -767,8 +759,8 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
         Returns:
           The node for *importing_module*.
         """
-        node: Optional[BaseNode] = None
-        parent_node: Optional[BaseNode]
+        node: BaseNode | None = None
+        parent_node: BaseNode | None
 
         node = self._find_module(module_name)
         if node is not None:
@@ -819,7 +811,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
           import_info: Information about an import
         """
-        node: Optional[BaseNode]
+        node: BaseNode | None
         absolute_name: str
 
         if import_info.import_level == 0:
@@ -892,7 +884,7 @@ class ModuleGraph(ObjectGraph[Union[BaseNode, PyPIDistribution], DependencyInfo]
 
     def _process_namelist(
         self,
-        importing_module: Union[Module, Package],
+        importing_module: Module | Package,
         imported_module: BaseNode,
         import_info: ImportInfo,
     ):

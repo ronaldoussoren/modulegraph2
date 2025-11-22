@@ -1,11 +1,13 @@
 """
 Commandline interface
 """
+
 import argparse
 import enum
 import functools
 import sys
-from typing import Dict, Iterator, List, Sequence, Set, TextIO, Tuple, Union
+from collections.abc import Iterator, Sequence
+from typing import TextIO
 
 from . import __version__
 from ._depinfo import DependencyInfo
@@ -30,7 +32,7 @@ NODE_ATTR = {
 }
 
 
-def format_node(node: BaseNode, mg: ModuleGraph) -> Dict[str, Union[str, int]]:
+def format_node(node: BaseNode, mg: ModuleGraph) -> dict[str, str | int]:
     """
     Return a dict of Graphviz attributes for *node*
 
@@ -41,7 +43,7 @@ def format_node(node: BaseNode, mg: ModuleGraph) -> Dict[str, Union[str, int]]:
     Returns:
        Graphviz attributes for the node
     """
-    results: Dict[str, Union[str, int]] = {}
+    results: dict[str, str | int] = {}
     if node in mg.roots():
         results["penwidth"] = 2
         results["root"] = "true"
@@ -52,8 +54,8 @@ def format_node(node: BaseNode, mg: ModuleGraph) -> Dict[str, Union[str, int]]:
 
 
 def format_edge(
-    source: BaseNode, target: BaseNode, edge: Set[DependencyInfo]
-) -> Dict[str, Union[str, int]]:
+    source: BaseNode, target: BaseNode, edge: set[DependencyInfo]
+) -> dict[str, str | int]:
     """
     Return a dict of Graphviz attributes for an edge
 
@@ -65,7 +67,7 @@ def format_edge(
     Returns:
        Graphviz attributes for the edge
     """
-    results: Dict[str, Union[str, int]] = {}
+    results: dict[str, str | int] = {}
 
     if all(e.is_optional for e in edge):
         results["style"] = "dashed"
@@ -77,7 +79,7 @@ def format_edge(
     return results
 
 
-def group_nodes(graph: ModuleGraph) -> Iterator[Tuple[str, str, Sequence[BaseNode]]]:
+def group_nodes(graph: ModuleGraph) -> Iterator[tuple[str, str, Sequence[BaseNode]]]:
     """
     Detect groups of reachable nodes in the graph.
 
@@ -92,7 +94,7 @@ def group_nodes(graph: ModuleGraph) -> Iterator[Tuple[str, str, Sequence[BaseNod
       A list of ``(groupname, shape, nodes)`` for the
       groupings.
     """
-    clusters: Dict[str, Tuple[str, str, List[BaseNode]]] = {}
+    clusters: dict[str, tuple[str, str, list[BaseNode]]] = {}
     for node in graph.iter_graph():
         if not isinstance(node, BaseNode):
             continue
@@ -144,7 +146,7 @@ class ExtendConstAction(argparse.Action):
         getattr(namespace, self._dest).extend(self._const)
 
 
-def parse_arguments(argv: List[str]) -> argparse.Namespace:
+def parse_arguments(argv: list[str]) -> argparse.Namespace:
     """
     Parse command-line arguments for the module.
 
@@ -325,7 +327,7 @@ def format_graph(args: argparse.Namespace, mg: ModuleGraph) -> None:
             raise SystemExit(1) from exc
 
 
-def main(argv: List[str]) -> None:
+def main(argv: list[str]) -> None:
     """
     Entry point for the module.
 

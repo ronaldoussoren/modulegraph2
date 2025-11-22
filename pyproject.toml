@@ -10,26 +10,25 @@ home-page = "https://modulegraph2.readthedocs.io/"
 description-file = "ReadMe.rst"
 requires = [
     "typing_extensions",
-    "objectgraph",
-
-    # Backward compatiblity with Python 3.6:
-    "dataclasses; python_version < '3.7'",
+    "objectgraph >= 1.0.5",
 ]
-requires-python = ">=3.6,<4"
+requires-python = ">=3.10"
 classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Build Tools",
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Free Threading :: 3 - Stable",
+
 ]
 license = "MIT"
 

@@ -1,8 +1,14 @@
 default_language_version:
-    python: python3.9
+    python: python3.14
 repos:
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2
+    hooks:
+    -   id: pyupgrade
+        args: ['--py310-plus']
+
   - repo: https://github.com/psf/black
-    rev: 23.1.0
+    rev: 25.11.0
     hooks:
       - id: black
         # override until resolved: https://github.com/ambv/black/issues/402
@@ -11,7 +17,7 @@ repos:
         exclude: ^testsuite/.*/
 
   - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
+    rev: 7.3.0
     hooks:
       - id: flake8
         exclude: ^testsuite/.*/
@@ -26,14 +32,14 @@ repos:
         - flake8-raise
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 7.0.0
     hooks:
       - id: isort
         exclude: ^testsuite/.*/
         additional_dependencies: [toml]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.0.1
+    rev: v1.18.2
     hooks:
     - id: mypy
       additional_dependencies:
@@ -41,7 +47,7 @@ repos:
       exclude: ^testsuite/.*/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: ^testsuite/.*/

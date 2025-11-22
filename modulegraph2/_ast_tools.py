@@ -2,9 +2,11 @@
 Tools for working with the AST for a module. This currently just defines
 a function for extracting information about import statements from the AST.
 """
+
 import ast
 import collections
-from typing import Deque, Iterator, Tuple
+from collections.abc import Iterator
+from typing import Deque
 
 from ._importinfo import ImportInfo, create_importinfo
 
@@ -30,7 +32,7 @@ def extract_ast_info(node: ast.AST) -> Iterator[ImportInfo]:
     # The obvious way to walk the AST is to use a NodeVisitor, but
     # that can exhaust the stack. Therefore this function iteratively
     # works the ast keeping state on a manual work queue.
-    work_q: Deque[Tuple[ast.AST, bool, bool, bool]] = collections.deque()
+    work_q: Deque[tuple[ast.AST, bool, bool, bool]] = collections.deque()
     work_q.append((node, False, False, False))
     while work_q:
         node, in_def, in_if, in_tryexcept = work_q.popleft()

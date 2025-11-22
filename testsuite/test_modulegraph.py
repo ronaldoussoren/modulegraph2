@@ -2348,7 +2348,7 @@ class TestModuleGraphQuerying(unittest.TestCase):
 
     def test_some_distributions(self):
         def make_distribution(name):
-            return PyPIDistribution(name, name, "", set(), set())
+            return PyPIDistribution(name, name, "", set(), set(), {})
 
         mg = ModuleGraph()
 
@@ -2385,7 +2385,7 @@ class TestModuleGraphQuerying(unittest.TestCase):
 
     def test_distributions_in_graph(self):
         def make_distribution(name):
-            return PyPIDistribution(name, name, "", set(), set())
+            return PyPIDistribution(name, name, "", set(), set(), {})
 
         mg = ModuleGraph()
 

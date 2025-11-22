@@ -5,10 +5,9 @@ The implies in this file are based on manual
 inspection of the stdlib sources for CPython.
 """
 
-
 import os
 import sys
-from typing import Dict, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 
 class Alias(str):
@@ -39,11 +38,11 @@ class Virtual(str):
 
 
 #: The type for the value in an implies dictionary.
-ImpliesValueType = Union[None, Alias, Virtual, Sequence[str]]
+ImpliesValueType = None | Alias | Virtual | Sequence[str]
 
 
 #: Implies dictionary for the standard library.
-STDLIB_IMPLIES: Dict[str, ImpliesValueType] = {
+STDLIB_IMPLIES: dict[str, ImpliesValueType] = {
     #
     # C extensions
     #
@@ -115,7 +114,7 @@ STDLIB_IMPLIES: Dict[str, ImpliesValueType] = {
 }
 
 #: Updates to the base :data:`STDLIB_IMPLIES` for specific platforms.
-STDLIB_PLATFORM_IMPLIES: Dict[str, Dict[str, ImpliesValueType]] = {
+STDLIB_PLATFORM_IMPLIES: dict[str, dict[str, ImpliesValueType]] = {
     "win32": {
         "signal": ("_signal", "_socket"),
         "ctypes": ("comtypes.server.inprocserver",),
@@ -128,7 +127,7 @@ STDLIB_IMPLIES.update(STDLIB_PLATFORM_IMPLIES.get(sys.platform, {}))
 
 
 #: Updates to the base :data:`STDLIB_IMPLIES` for specific Python releases.
-STDLIB_VERSION_IMPLIES: Dict[Tuple[int, int], Dict[str, ImpliesValueType]] = {
+STDLIB_VERSION_IMPLIES: dict[tuple[int, int], dict[str, ImpliesValueType]] = {
     (3, 6): {
         "zipimport": ("zlib",),
         "turtledemo": (

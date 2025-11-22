@@ -3,12 +3,13 @@ This module contains functions and classes that are used
 to process information about package distributions (the
 stuff on PyPI).
 """
+
 import dataclasses
 import os
 import sys
+from collections.abc import Iterable, Iterator
 from email.parser import BytesParser
 from importlib.machinery import EXTENSION_SUFFIXES
-from typing import Dict, Iterable, Iterator, List, Optional, Set, Union
 
 
 @dataclasses.dataclass(frozen=True)
@@ -27,6 +28,10 @@ class PyPIDistribution:
       import_names (Set[str]): The importable names in this distribution
                    (modules and packages)
 
+      extension_attributes
+        A dictionary for use by users for the modulegraph2
+        library, not used by modulegraph2 itself.
+
     .. note::
 
        The information about distributions is fairly minimal at this point,
@@ -36,10 +41,13 @@ class PyPIDistribution:
     identifier: str
     name: str
     version: str
-    files: Set[str]
-    import_names: Set[str]
+    files: set[str]
+    import_names: set[str]
 
-    def contains_file(self, filename: Union[str, os.PathLike]):
+    # 3th party attribubtes, not used by modulegraph
+    extension_attributes: dict
+
+    def contains_file(self, filename: str | os.PathLike):
         """
         Check if a file is part of this distribution.
 
@@ -62,8 +70,8 @@ def create_distribution(distribution_file: str) -> PyPIDistribution:
     Returns
       A :class:`PyPIDistribution` for *distribution_file*
     """
-    files: List[str] = []
-    import_names: List[str] = []
+    files: list[str] = []
+    import_names: list[str] = []
 
     distribution_dir = os.path.dirname(distribution_file)
 
@@ -113,15 +121,15 @@ def create_distribution(distribution_file: str) -> PyPIDistribution:
                 break
 
     return PyPIDistribution(
-        distribution_file, name, version, set(files), set(import_names)
+        distribution_file, name, version, set(files), set(import_names), {}
     )
 
 
-_cached_distributions: Dict[str, PyPIDistribution] = {}
+_cached_distributions: dict[str, PyPIDistribution] = {}
 
 
 def all_distributions(
-    path: Optional[Iterable[str]] = None,
+    path: Iterable[str] | None = None,
 ) -> Iterator[PyPIDistribution]:
     """
     Yield all distributions found on the search path.
@@ -149,13 +157,13 @@ def all_distributions(
 
                 yield dist
 
-        except os.error:
+        except OSError:
             continue
 
 
 def distribution_for_file(
-    filename: Union[str, os.PathLike], path: Optional[Iterable[str]]
-) -> Optional[PyPIDistribution]:
+    filename: str | os.PathLike, path: Iterable[str] | None
+) -> PyPIDistribution | None:
     """
     Find a distribution for a given file, for installed distributions.
 
@@ -174,8 +182,8 @@ def distribution_for_file(
 
 
 def distribution_named(
-    name: str, path: Optional[Iterable[str]] = None
-) -> Optional[PyPIDistribution]:
+    name: str, path: Iterable[str] | None = None
+) -> PyPIDistribution | None:
     """
     Find a named distribution on the search path.
 

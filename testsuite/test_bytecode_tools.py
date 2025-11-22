@@ -155,7 +155,7 @@ class TestByteCodeExtractor(unittest.TestCase):
             f"""\
             from __future__ import print_function
 
-            VALUE = { { v: ((v,)*10,)*10 for v in range(1000) } }
+            VALUE = { { v: ((v,) * 10,) * 10 for v in range(1000) } }  # noqa: E201, E202
 
             if __name__ == "__main__":
                 import sys
@@ -218,7 +218,14 @@ class TestByteCodeExtractor(unittest.TestCase):
                 self.assertEqual(info.star_import, False)
                 self.assertEqual(info.import_names, set())
                 self.assertEqual(
-                    info.is_in_function, info.import_module in {"c", "d", "e"}
+                    info.is_in_function,
+                    info.import_module in {"c", "d", "e"},
+                    f"{info.is_in_function=} {info.import_module}",
+                )
+                self.assertEqual(
+                    info.is_in_function,
+                    info.import_module in {"c", "d", "e"},
+                    f"{info.is_in_function=} {info.import_module}",
                 )
 
     def test_import_types(self):

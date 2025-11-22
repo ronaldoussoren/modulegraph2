@@ -1,6 +1,7 @@
 """
 Tools for building the module graph
 """
+
 import ast
 import importlib
 import importlib.abc
@@ -9,7 +10,8 @@ import pathlib
 import sys
 import zipfile
 import zipimport
-from typing import Iterable, List, Optional, Tuple, Type, cast
+from collections.abc import Iterable
+from typing import cast
 
 from ._ast_tools import extract_ast_info
 from ._bytecode_tools import extract_bytecode_info
@@ -120,7 +122,7 @@ def _contains_datafiles(directory: pathlib.Path):
                 return True
 
     except (NotADirectoryError, FileNotFoundError):
-        names: List[str] = []
+        names: list[str] = []
         while not directory.exists():
             names.insert(0, directory.name)
             directory = directory.parent
@@ -155,18 +157,16 @@ def _contains_datafiles(directory: pathlib.Path):
 
 
 def node_for_spec(
-    spec: importlib.machinery.ModuleSpec, path: List[str]
-) -> Tuple[BaseNode, Iterable[ImportInfo]]:
+    spec: importlib.machinery.ModuleSpec, path: list[str]
+) -> tuple[BaseNode, Iterable[ImportInfo]]:
     """
     Create the node for a ModuleSpec and locate related imports
     """
     node: BaseNode
     imports: Iterable[ImportInfo]
-    source_code: Optional[str] = None
+    source_code: str | None = None
 
-    loader: Optional[importlib.abc.Loader] = cast(
-        Optional[importlib.abc.Loader], spec.loader
-    )
+    loader: importlib.abc.Loader | None = cast(importlib.abc.Loader | None, spec.loader)
 
     if loader is None or type(loader).__name__ in (
         "_NamespaceLoader",
@@ -184,9 +184,11 @@ def node_for_spec(
             loader=loader,
             distribution=None,
             extension_attributes={},
-            filename=pathlib.Path(adjust_path(spec.origin))
-            if spec.origin is not None
-            else None,
+            filename=(
+                pathlib.Path(adjust_path(spec.origin))
+                if spec.origin is not None
+                else None
+            ),
             search_path=[pathlib.Path(loc) for loc in search_path],
             has_data_files=False,
         )
@@ -209,13 +211,17 @@ def node_for_spec(
         node = ExtensionModule(
             name=spec.name,
             loader=loader,
-            distribution=distribution_for_file(spec.origin, path)
-            if spec.origin is not None
-            else None,
+            distribution=(
+                distribution_for_file(spec.origin, path)
+                if spec.origin is not None
+                else None
+            ),
             extension_attributes={},
-            filename=pathlib.Path(adjust_path(spec.origin))
-            if spec.origin is not None
-            else None,
+            filename=(
+                pathlib.Path(adjust_path(spec.origin))
+                if spec.origin is not None
+                else None
+            ),
             globals_read=set(),
             globals_written=set(),
             code=None,
@@ -234,8 +240,8 @@ def node_for_spec(
         inspect_loader = cast(importlib.abc.InspectLoader, loader)
         source_code = inspect_loader.get_source(spec.name)
 
-        ast_imports: Optional[Iterable[ImportInfo]]
-        node_type: Optional[Type[Module]] = None
+        ast_imports: Iterable[ImportInfo] | None
+        node_type: type[Module] | None = None
 
         if source_code is not None:
             filename = spec.origin
@@ -323,9 +329,11 @@ def node_for_spec(
                 init_module=FrozenModule(
                     name="@@SIX_MOVES@@",
                     loader=loader,
-                    distribution=distribution_for_file(spec.origin, path)
-                    if spec.origin is not None
-                    else None,
+                    distribution=(
+                        distribution_for_file(spec.origin, path)
+                        if spec.origin is not None
+                        else None
+                    ),
                     extension_attributes={},
                     filename=None,
                     globals_written=set(SIX_MOVES_GLOBALS),

@@ -27,6 +27,7 @@ PUBLIC_SYMBOLS = {
     "all_distributions",
     "distribution_named",
     "saved_sys_path",
+    "stdlib_module_names",
 }
 
 PYTHON_SYMBOLS = {

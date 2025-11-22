@@ -1,11 +1,11 @@
 """
 Some useful utility functions.
 """
+
 import contextlib
 import importlib
 import pathlib
 import sys
-from typing import List, Optional, Tuple
 
 
 @contextlib.contextmanager
@@ -25,7 +25,7 @@ def saved_sys_path():
         importlib.invalidate_caches()
 
 
-def split_package(name: str) -> Tuple[Optional[str], str]:
+def split_package(name: str) -> tuple[str | None, str]:
     """
     Return (package, name) given a fully qualified module name
 
@@ -59,7 +59,7 @@ class FakePackage:
     in the module ``__init__.py`` file).
     """
 
-    def __init__(self, path: List[str]):
+    def __init__(self, path: list[str]):
         """
         Create a new instance.
 
@@ -71,7 +71,7 @@ class FakePackage:
 
 if hasattr(sys, "stdlib_module_names"):
 
-    def stdlib_module_names() -> List[str]:
+    def stdlib_module_names() -> list[str]:
         """
         Return a list of modules in the standard library
         """
@@ -79,7 +79,7 @@ if hasattr(sys, "stdlib_module_names"):
 
 else:
 
-    def stdlib_module_names() -> List[str]:
+    def stdlib_module_names() -> list[str]:
         """
         Return a list of modules in the standard library
         """

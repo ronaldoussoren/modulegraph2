@@ -3,7 +3,6 @@ import importlib.abc
 import os
 import pathlib
 from types import CodeType
-from typing import List, Optional, Set
 
 from ._distributions import PyPIDistribution
 
@@ -34,9 +33,9 @@ class BaseNode:
     """
 
     name: str
-    loader: Optional[importlib.abc.Loader]
-    distribution: Optional[PyPIDistribution]
-    filename: Optional[pathlib.Path]
+    loader: importlib.abc.Loader | None
+    distribution: PyPIDistribution | None
+    filename: pathlib.Path | None
 
     # 3th party attribubtes, not used by modulegraph
     extension_attributes: dict
@@ -69,11 +68,11 @@ class Script(BaseNode):
         Code object for the script
     """
 
-    globals_written: Set[str]
-    globals_read: Set[str]
-    code: Optional[CodeType]
+    globals_written: set[str]
+    globals_read: set[str]
+    code: CodeType | None
 
-    def __init__(self, filename: os.PathLike, code: Optional[CodeType]):
+    def __init__(self, filename: os.PathLike, code: CodeType | None):
         name = os.fspath(filename)
         path = pathlib.Path(filename).resolve()
 
@@ -105,9 +104,9 @@ class Module(BaseNode):
         Code for the module
     """
 
-    globals_written: Set[str]
-    globals_read: Set[str]
-    code: Optional[CodeType]
+    globals_written: set[str]
+    globals_read: set[str]
+    code: CodeType | None
 
     @property
     def uses_dunder_import(self) -> bool:
@@ -191,7 +190,7 @@ class NamespacePackage(BaseNode):
         package.
     """
 
-    search_path: List[pathlib.Path]
+    search_path: list[pathlib.Path]
 
     has_data_files: bool
 
@@ -233,9 +232,9 @@ class Package(BaseNode):
     """
 
     init_module: BaseNode
-    search_path: List[pathlib.Path]
+    search_path: list[pathlib.Path]
     has_data_files: bool
-    namespace_type: Optional[str]
+    namespace_type: str | None
 
     @property
     def globals_written(self):
@@ -255,7 +254,7 @@ class ExcludedModule(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
@@ -271,7 +270,7 @@ class MissingModule(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,
@@ -290,7 +289,7 @@ class InvalidRelativeImport(BaseNode):
     """
 
     def __init__(self, module_name):
-        return super().__init__(
+        super().__init__(
             name=module_name,
             loader=None,
             distribution=None,

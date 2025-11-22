@@ -6,7 +6,9 @@ Export functions for creating Graphviz files.
     a generic version of this module will be added to the objectgraph
     package, with modulegraph2 specific functionality in this module.
 """
-from typing import Callable, Dict, Iterator, Sequence, Set, TextIO, Tuple, Union
+
+from collections.abc import Callable, Iterator, Sequence
+from typing import TextIO
 
 from objectgraph import EDGE_TYPE, NODE_TYPE  # , ObjectGraph
 
@@ -32,12 +34,10 @@ def format_attributes(callable, *args):
 def export_to_dot(
     file: TextIO,
     graph: ModuleGraph,
-    format_node: Callable[[NODE_TYPE], Dict[str, Union[str, int]]],
-    format_edge: Callable[
-        [NODE_TYPE, NODE_TYPE, Set[EDGE_TYPE]], Dict[str, Union[str, int]]
-    ],
+    format_node: Callable[[NODE_TYPE], dict[str, str | int]],
+    format_edge: Callable[[NODE_TYPE, NODE_TYPE, set[EDGE_TYPE]], dict[str, str | int]],
     group_nodes: Callable[
-        [ModuleGraph], Iterator[Tuple[str, str, Sequence[NODE_TYPE]]]
+        [ModuleGraph], Iterator[tuple[str, str, Sequence[NODE_TYPE]]]
     ],
 ) -> None:
     """

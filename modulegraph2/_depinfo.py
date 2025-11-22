@@ -1,5 +1,4 @@
 import dataclasses
-from typing import Optional
 
 from ._importinfo import ImportInfo
 
@@ -29,10 +28,10 @@ class DependencyInfo:
     is_optional: bool
     is_global: bool
     in_fromlist: bool
-    imported_as: Optional[str]
+    imported_as: str | None
 
 
-def from_importinfo(import_info: ImportInfo, in_fromlist: bool, name: Optional[str]):
+def from_importinfo(import_info: ImportInfo, in_fromlist: bool, name: str | None):
     """
     Create an :class:`DependencyInfo` instance from an
     :class:`ImportInfo` and additional information.

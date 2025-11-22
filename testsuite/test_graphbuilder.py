@@ -1,5 +1,6 @@
 import importlib
 import importlib.machinery
+import importlib.resources as resources
 import os
 import pathlib
 import shutil
@@ -7,11 +8,6 @@ import subprocess
 import sys
 import unittest
 from types import CodeType
-
-try:
-    import importlib.resources as resources
-except ImportError:
-    import importlib_resources as resources  # type: ignore
 
 from modulegraph2 import (
     BuiltinModule,
