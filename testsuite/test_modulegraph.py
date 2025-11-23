@@ -97,15 +97,16 @@ class TestModuleGraphScripts(unittest.TestCase, util.TestMixin):
         node = mg.find_node("setuptools._vendor.packaging")
         self.assertIsInstance(node, Package)
 
-        node = mg.find_node("setuptools.extern.packaging")
-        self.assertIsInstance(node, AliasNode)
+        if int(setuptools.__version__.split(".")[0]) < 71:
+            node = mg.find_node("setuptools.extern.packaging")
+            self.assertIsInstance(node, AliasNode)
 
-        self.assert_has_edge(
-            mg,
-            "setuptools.extern.packaging",
-            "setuptools._vendor.packaging",
-            {DependencyInfo(False, True, False, None)},
-        )
+            self.assert_has_edge(
+                mg,
+                "setuptools.extern.packaging",
+                "setuptools._vendor.packaging",
+                {DependencyInfo(False, True, False, None)},
+            )
 
     def test_add_script_twice(self):
         mg = ModuleGraph()

@@ -7,7 +7,7 @@ import warnings
 
 with warnings.catch_warnings():
     # Pkg_resources will be removed in the near future
-    warnings.simplefilter("ignore", category=DeprecationWarning)
+    warnings.simplefilter("ignore", category=UserWarning)
     pkg_resources: types.ModuleType | None
     try:
         import pkg_resources
@@ -34,9 +34,11 @@ class TestSetuptoolsNamespacePackage(unittest.TestCase):
 
     @unittest.skipIf(pkg_resources is None, "test pkg_resources feature")
     def test_setuptools_namespace(self):
-        mg = modulegraph2.ModuleGraph()
-        mg.add_module("mynamespace.pkg1_mod")
-        mg.add_module("mynamespace.pkg2_mod")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=DeprecationWarning)
+            mg = modulegraph2.ModuleGraph()
+            mg.add_module("mynamespace.pkg1_mod")
+            mg.add_module("mynamespace.pkg2_mod")
 
         n = mg.find_node("mynamespace.pkg1_mod")
         self.assertIsInstance(n, modulegraph2.SourceModule)

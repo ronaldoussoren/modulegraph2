@@ -133,6 +133,7 @@ if hasattr(sys, "real_prefix"):
                 os.unlink(site_path)
 
     class TestAdjustUsage(unittest.TestCase):
+        @unittest.skipIf("_distutils" in distutils.__file__, "modern setuptools")
         def test_adjustments(self):
             # Explicitly test adjustments for distutils because virtualenv environments
             # contain a stub distutils package that should not be present in the graph.

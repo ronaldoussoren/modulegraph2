@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.11
 
+import importlib
 import runpy
 import sys
 
@@ -10,6 +11,7 @@ with open(activate_this, "rb") as stream:
     activate_source = stream.read()
 
 exec(activate_source, {"__file__": activate_this})
+importlib.invalidate_caches()
 
 sys.argv[:] = "coverage run --parallel -m unittest -v".split()
 runpy.run_module("coverage")
