@@ -165,7 +165,7 @@ def _extract_single(code: types.CodeType, is_function_code: bool, is_class_code:
                     and instructions[offset - 2].opname == "LOAD_BUILD_CLASS"
                 ):
                     class_codes.add(code.co_consts[const_offset])
-                if (
+                elif (
                     offset >= 3
                     and instructions[offset - 2].opname == "PUSH_NULL"
                     and instructions[offset - 3].opname == "LOAD_BUILD_CLASS"
