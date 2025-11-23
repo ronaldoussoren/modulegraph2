@@ -5,7 +5,10 @@ repos:
     rev: v3.21.2
     hooks:
     -   id: pyupgrade
+        exclude: testsuite/six-dir
         args: ['--py310-plus']
+
+
 
   - repo: https://github.com/psf/black
     rev: 25.11.0
