@@ -2,20 +2,21 @@
 requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
 
-[tool.flit.metadata]
-module = "modulegraph2"
-author = "Ronald Oussoren"
-author-email = "ronaldoussoren@mac.com"
+[project]
+name = "modulegraph2"
+description = "A basic graph library"
+dynamic = ["version"]
+authors = [
+    {name = "Ronald Oussoren", email = "ronaldoussoren@mac.com"},
+]
 home-page = "https://modulegraph2.readthedocs.io/"
-description-file = "ReadMe.rst"
+readme = "ReadMe.rst"
 requires = [
-    "typing_extensions",
     "objectgraph >= 1.0.5",
 ]
 requires-python = ">=3.10"
 classifiers = [
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -32,8 +33,9 @@ classifiers = [
 
 ]
 license = "MIT"
+license-files = ["doc/license.rst"]
 
-[tool.flit.metadata.urls]
+[project.urls]
 "Documentation" = "https://modulegraph2.readthedocs.io/"
 "Source Code" = "https://github.com/ronaldoussoren/modulegraph2/"
 "Issue Tracker" = "https://github.com/ronaldoussoren/modulegraph2/issues"

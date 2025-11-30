@@ -1,6 +1,13 @@
 Release history
 ===============
 
+2.3.1
+-----
+
+* Modernize pyproject.toml.
+
+* Drop dependency on ``typing_extensions``.
+
 2.3
 ---
 

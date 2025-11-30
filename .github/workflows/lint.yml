@@ -1,4 +1,4 @@
-name: Lint
+name: Linting with isort, black, flake8 and mypy
 
 on: [push, pull_request]
 
@@ -8,13 +8,13 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.14"]
-        toxenv: [isort, black, flake8]
+        toxenv: [isort, black, flake8, mypy]
 
     steps:
       - uses: actions/checkout@v1
 
       - name: pip cache
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.toxenv }}-pip-${{ hashFiles('**/pyproject.toml') }}
