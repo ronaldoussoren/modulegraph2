@@ -22,7 +22,7 @@ jobs:
 
       - name: Install package and dependencies
         run: |
-          pip install .
+          python -m pip  install .
 
       - name: Run tests
         run: |
