@@ -22,7 +22,7 @@ jobs:
 
       - name: Install package and dependencies
         run: |
-          python -m pip  install .  virtualenv wheel mypy
+          python -m pip  install .  virtualenv wheel mypy setuptools
 
       - name: Run tests
         run: |
