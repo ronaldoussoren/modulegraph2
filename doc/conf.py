@@ -16,6 +16,7 @@ def get_version():
 
 # Add root of the tree to sys.path for autodoc
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print(sys.path[0])
 
 
 # -- General configuration -----------------------------------------------------
@@ -28,9 +29,22 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.ifconfig",
     "sphinx.ext.napoleon",
-    "sphinxcontrib.blockdiag",
     "sphinx_sitemap",
+    "sphinx_copybutton",
+    "sphinx_design",
+    "sphinx_tabs.tabs",
+    "sphinx_togglebutton",
+    "sphinxcontrib.mermaid",
+    "sphinx_reredirects",
+    "sphinxext.opengraph",
+    "sphinxcontrib.jquery",
+    "sphinx_datatables",
 ]
+
+extlinks = {
+    "issue": ("https://github.com/ronaldoussoren/pyobjc/issues/%s", "#%s"),
+    "pr": ("https://github.com/ronaldoussoren/pyobjc/pull/%s", "#%s"),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -46,7 +60,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "modulegraph2"
-copyright = "2010, Ronald Oussoren"
+copyright = "2010-2025, Ronald Oussoren"
 
 # The short X.Y version.
 version = get_version()
@@ -56,7 +70,7 @@ release = version
 
 # List of directories, relative to source directory, that shouldn"t be searched
 # for source files.
-exclude_trees = ["_build"]
+exclude_patterns = ["_build", "tmp"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -67,7 +81,37 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently "default" and "sphinxdoc".
 # html_theme = "default"
-html_theme = "nature"
+html_theme = "shibuya"
+
+html_theme_options = {
+    "accent_color": "jade",
+    "color_mode": "auto",
+    "nav_links": [
+        {
+            "title": "GitHub",
+            "url": "https://github.com/ronaldoussoren/modulegraph2",
+            "external": True,
+        },
+        {
+            "title": "Support Me",
+            "url": "https://blog.ronaldoussoren.net/support/",
+            "external": True,
+        },
+        {
+            "title": "Resources",
+            "children": [
+                {
+                    "title": "Changelog",
+                    "url": "changelog",
+                    "summary": "Overview of updates",
+                },
+            ],
+        },
+    ],
+    "globaltoc_expand_depth": 1,
+    "github_url": "https://github.com/ronaldoussoren/pyobjc",
+    "mastodon_url": "https://blog.ronaldoussoren.com/@ronald",
+}
 
 html_baseurl = "https://modulegraph2.readthedocs.io/"
 
@@ -107,4 +151,6 @@ intersphinx_mapping = {
     "objectgraph": ("https://objectgraph.readthedocs.io/", None),
 }
 
-todo_include_todos = True
+todo_include_todos = False
+blockdiag_html_image_format = "svg"
+blockdiag_debug = True

@@ -1,69 +1,71 @@
 Modulegraph2 - Python module dependency graph
 =============================================
 
-Modulegraph2 is a library for creating and introspecting
-the dependency graph between Python modules. The graph is
-created using static analisys from source and byte code.
+.. rst-class:: lead
 
-The dependency graph contains information about packages,
-modules, extensions and their dependencies. The dependencies
-are annotated with relevant information about the import
-statement.
+   Modulegraph2 is a library for creating and introspecting
+   the dependency graph between Python modules. The graph is
+   created using static analisys from source and byte code.
 
-Modules that from a distribution installed using `pip`_ also have
-a link to information about that distribution.
+   The dependency graph contains information about packages,
+   modules, extensions and their dependencies. The dependencies
+   are annotated with relevant information about the import
+   statement.
 
+   Modules that from a distribution installed using pip also have
+   a link to information about that distribution.
 
-Release information
--------------------
+.. container:: buttons
 
-Modulegraph2 2.0a1 was released on 2019-02-03. See the :doc:`changelog <changelog>`
-for information on this release.
+   `GitHub <https://github.com/ronaldoussoren/pyobjc>`_
 
+.. grid:: 1 1 2 3
+   :gutter: 2
+   :padding:  0
+   :class-row: surface
 
-Installation
-------------
+   .. grid-item-card:: Release Info
+      :link: changelog
+      :link-type: doc
 
-Modulegraph2 can be installed using `pip <https://pypi.org/project/pip/>`_.
-
-
-Supported platforms
--------------------
-
-Modulegraph2 supports Python 3.6 and later on all platforms. The code
-is developed using Python 3.7 on macOS, but and regularly tested with
-other Python versions and on Linux and Windows.
-
-Windows and Linux build status:
-
-.. image:: https://ci.appveyor.com/api/projects/status/ru71tpdinlr7whym?svg=true
-   :target: https://ci.appveyor.com/project/RonaldOussoren/modulegraph2
-
-Using modulegraph2
-------------------
-
-.. toctree::
-   :maxdepth: 1
-
-   command-line
-   modulegraph2
-   examples
+      modulegraph 2.3  was released on 2025-11-23.  See the :doc:`changelog <changelog>` for more information.
 
 
-Development
------------
+   .. grid-item-card:: Supported Platforms
+
+      - Python 3.10 and later
+
+   .. grid-item-card:: Installing modulegraph2
+
+      .. sourcecode:: sh
+
+         $ python3 -mpip \
+           install -U modulegraph2
 
 .. toctree::
-   :maxdepth: 1
+   :hidden:
 
-   license
    changelog
-   development
-   internals
 
-Online Resources
-................
+.. grid:: 1 1 2 2
+   :gutter: 2
 
-* `Sourcecode repository on GitHub <https://github.com/ronaldoussoren/modulegraph2/>`_
+   .. grid-item-card::
 
-* `The issue tracker <https://github.com/ronaldoussoren/modulegraph2/issues>`_
+      .. toctree::
+         :caption: Using
+         :maxdepth: 1
+
+         command-line
+         modulegraph2
+         examples
+
+   .. grid-item-card::
+
+      .. toctree::
+         :caption: Development
+         :maxdepth: 1
+
+         license
+         development
+         internals

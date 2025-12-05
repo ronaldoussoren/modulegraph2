@@ -1,12 +1,21 @@
 Release history
 ===============
 
-2.3.1
------
+2.4
+---
 
 * Modernize pyproject.toml.
 
 * Drop dependency on ``typing_extensions``.
+
+* Drop support for legacy versions of virtualenv that
+  don't build upon the standard library ``venv`` module.
+
+* Added :class:`modulegraph2.FrozenPackage`.
+
+* Properly handle ``xml.parser.expat.errors`` and
+  ``xml.parser.expat.model`` (both are simular to
+  ``os.path`` in their implementation).
 
 2.3
 ---

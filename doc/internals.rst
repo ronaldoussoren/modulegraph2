@@ -191,38 +191,6 @@ to avoid exhausting the stack. This is a work stack because
 imports need to be processed depth first to be able to
 process ``from ... import ...`` statements correctly.
 
-The diagram below is an overview of the imported method
-interactions while building a dependecy graph.
-
-.. blockdiag::
-
-   blockdiag callgraph {
-     add_module -> _find_or_load_module
-     add_script -> _find_or_load_module
-
-     _find_or_load_module -> _find_or_load_module
-     _find_or_load_module -> _implied_references
-     _find_or_load_module -> _load_module
-
-     _implied_references -> _find_or_load_module
-
-     _load_module -> _create_missing_module
-     _load_module -> _process_import_list
-
-     _process_import_list -> _process_import
-     _process_import_list -> _post_processing
-
-     _process_import -> _find_or_load_module
-     _process_import -> _process_namelist
-
-     _process_namelist -> _find_or_load_module
-   }
-
-The call graph implies recursion through *_find_or_load_module*, but
-that recursion is managed explicitly through a work stack that is
-processed iteratively. The intention is to avoid exhausting the stack
-with convoluted code bases.
-
 Module "_nodes": Definition of graph nodes
 ------------------------------------------
 

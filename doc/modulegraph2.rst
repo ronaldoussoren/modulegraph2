@@ -18,11 +18,11 @@ Creating the graph
 
 .. automethod:: modulegraph2.ModuleGraph.add_module
 
-.. automethod:: modulegraph2.ModuleGraph.add_package
-
 .. automethod:: modulegraph2.ModuleGraph.add_script
 
 .. automethod:: modulegraph2.ModuleGraph.add_distribution
+
+.. automethod:: modulegraph2.ModuleGraph.add_dependencies_for_source
 
 Affecting building the graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,6 +37,12 @@ Callbacks
 .. automethod:: modulegraph2.ModuleGraph.add_missing_hook
 
 .. automethod:: modulegraph2.ModuleGraph.add_post_processing_hook
+
+.. automethod:: modulegraph2.ModuleGraph.hook_context
+
+.. automethod:: modulegraph2.ModuleGraph.import_module
+
+.. automethod:: modulegraph2.ModuleGraph.import_package
 
 Reporting
 ~~~~~~~~~
@@ -84,6 +90,10 @@ below. All these classes are :class:`dataclasses <dataclasses.dataclass>`.
    :show-inheritance:
 
 .. autoclass:: modulegraph2.Package
+   :members:
+   :show-inheritance:
+
+.. autoclass:: modulegraph2.FrozenPackage
    :members:
    :show-inheritance:
 
