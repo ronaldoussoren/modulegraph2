@@ -14,6 +14,8 @@ from modulegraph2 import (
     BytecodeModule,
     ExtensionModule,
     FrozenModule,
+    FrozenPackage,
+    InvalidModule,
     MissingModule,
     NamespacePackage,
     Package,
@@ -209,6 +211,22 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertEqual(node.globals_written, {"foo", "bar", "sys", "__doc__"})
         self.assertEqual(node.globals_read, {"foo"})
 
+    def test_source_module_invalid_encoding(self):
+        spec = importlib.util.find_spec("latin1_without_coding")
+
+        node, imports = graphbuilder.node_for_spec(spec, sys.path)
+        self.assertIsInstance(node, InvalidModule)
+        self.assertEqual(node.name, "latin1_without_coding")
+        self.assertEqual(node.identifier, "latin1_without_coding")
+
+    def test_source_module_syntax_error(self):
+        spec = importlib.util.find_spec("syntax_error")
+
+        node, imports = graphbuilder.node_for_spec(spec, sys.path)
+        self.assertIsInstance(node, InvalidModule)
+        self.assertEqual(node.name, "syntax_error")
+        self.assertEqual(node.identifier, "syntax_error")
+
     def test_bytecode_module(self):
         # Module with only a PYC file
         spec = importlib.util.find_spec("bytecode_module")
@@ -334,6 +352,15 @@ class TestNodeBuilder(unittest.TestCase):
         self.assertEqual(node.has_data_files, False)
 
         self.assertIsInstance(node.init_module, ExtensionModule)
+
+    @unittest.skipIf(sys.version_info[:2] <= (3, 10), "not relevant on Python 3.10")
+    def test_package_frozen(self):
+        spec = importlib.util.find_spec("__phello__")
+        node, imports = graphbuilder.node_for_spec(spec, sys.path)
+        self.assertIsInstance(node, FrozenPackage)
+        self.assertEqual(node.name, "__phello__")
+        self.assertEqual(node.identifier, "__phello__")
+        self.assertIs(node.filename, None)
 
     def test_distribution(self):
         spec = importlib.util.find_spec("pip")

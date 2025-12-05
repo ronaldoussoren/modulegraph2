@@ -66,6 +66,8 @@ class Script(BaseNode):
 
       code
         Code object for the script
+
+    .. versionadded:: 2.2 The *code* attribute
     """
 
     globals_written: set[str]
@@ -102,6 +104,8 @@ class Module(BaseNode):
 
       code
         Code for the module
+
+    .. versionadded:: 2.2 The *code* attribute
     """
 
     globals_written: set[str]
@@ -125,6 +129,7 @@ class Module(BaseNode):
         return "__file__" in self.globals_read
 
 
+@dataclasses.dataclass
 class SourceModule(Module):
     """
     Node representing a python module for which
@@ -134,9 +139,10 @@ class SourceModule(Module):
     pass
 
 
+@dataclasses.dataclass
 class FrozenModule(Module):
     """
-    Note representing a python module that is
+    Node representing a python module that is
     frozen into an executable. This has source
     code available, but not on the filesystem.
     """
@@ -144,6 +150,7 @@ class FrozenModule(Module):
     pass
 
 
+@dataclasses.dataclass
 class BytecodeModule(Module):
     """
     Node representing a python module for which
@@ -153,6 +160,7 @@ class BytecodeModule(Module):
     pass
 
 
+@dataclasses.dataclass
 class ExtensionModule(Module):
     """
     Node representing a native extension module.
@@ -161,6 +169,7 @@ class ExtensionModule(Module):
     pass
 
 
+@dataclasses.dataclass
 class BuiltinModule(Module):
     """
     Node representing a built-in extension module.
@@ -169,6 +178,7 @@ class BuiltinModule(Module):
     pass
 
 
+@dataclasses.dataclass
 class InvalidModule(Module):
     """
     Not representing a module that could not be
@@ -247,6 +257,18 @@ class Package(BaseNode):
         return self.init_module.globals_read
 
 
+@dataclasses.dataclass
+class FrozenPackage(Package):
+    """
+    Node representing a python package that is
+    frozen into an executable. This has source
+    code available, but not on the filesystem.
+
+    .. versionadded:: 2.4
+    """
+
+
+@dataclasses.dataclass
 class ExcludedModule(BaseNode):
     """
     Node representing a module that is explicitly
@@ -263,6 +285,7 @@ class ExcludedModule(BaseNode):
         )
 
 
+@dataclasses.dataclass(init=False)
 class MissingModule(BaseNode):
     """
     Node representing a name that is imported, but
@@ -279,6 +302,7 @@ class MissingModule(BaseNode):
         )
 
 
+@dataclasses.dataclass(init=False)
 class InvalidRelativeImport(BaseNode):
     """
     Node representing a relative import that refers

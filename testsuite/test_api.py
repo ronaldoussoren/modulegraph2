@@ -12,6 +12,7 @@ PUBLIC_SYMBOLS = {
     "ExcludedModule",
     "ExtensionModule",
     "FrozenModule",
+    "FrozenPackage",
     "InvalidModule",
     "InvalidRelativeImport",
     "MissingModule",

@@ -12,7 +12,7 @@ This module provides annotation for use with
 `Mypy <https://mypy.readthedocs.io/en/latest/>`_.
 """
 
-__version__ = "2.3.1"
+__version__ = "2.4"
 
 from ._depinfo import DependencyInfo
 from ._distributions import PyPIDistribution, all_distributions, distribution_named
@@ -26,6 +26,7 @@ from ._nodes import (
     ExcludedModule,
     ExtensionModule,
     FrozenModule,
+    FrozenPackage,
     InvalidModule,
     InvalidRelativeImport,
     MissingModule,
@@ -48,6 +49,7 @@ __all__ = (
     "ExcludedModule",
     "ExtensionModule",
     "FrozenModule",
+    "FrozenPackage",
     "InvalidModule",
     "InvalidRelativeImport",
     "MissingModule",

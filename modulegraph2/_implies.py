@@ -79,6 +79,10 @@ STDLIB_IMPLIES: dict[str, ImpliesValueType] = {
     "typing.re": Virtual("typing"),
     # os.path is a virtual package
     "os.path": Alias(os.path.__name__),
+    # xml.parsers.expat.* are virtual modules, and both
+    # are creatred from the pyexpat extension module.
+    "xml.parsers.expat.model": Alias("pyexpat"),
+    "xml.parsers.expat.errors": Alias("pyexpat"),
     # sysconfig users __import__ to load platform specific data
     "sysconfig": (
         "_sysconfigdata_{abi}_{platform}_{multiarch}".format(

@@ -192,6 +192,8 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
 
         Args:
             source_code: Source code for a python script or module
+
+        .. versionadded:: 2.3
         """
         ast_node = compile(
             source_code,
@@ -245,10 +247,17 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
     #
 
     @contextlib.contextmanager
-    def hook_context(self):
+    def hook_context(self) -> Iterator[None]:
         """
         Contextmanger that allows using hook APIs outside of a hook
         callback.
+
+        Usage::
+
+            with mg.hook_context():
+                mg.import_module(...)
+
+        .. versionadded:: 2.4
         """
         try:
             yield
@@ -289,17 +298,23 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
 
         This method only supports packages that are found in the
         filesystem.
+
         Args:
             importing_module: The module that triggers this import
 
             package_name: Name of the package to import
+
+        .. versionadded:: 2.3
         """
         node = self._find_module(package_name)
-        if node is None:
-            node = self._find_or_load_module(None, package_name)
 
-        self._run_stack()
+        with self._saved_stack():
+            if node is None:
+                node = self._find_or_load_module(None, package_name)
 
+            self._run_stack()
+
+        self.add_edge(importing_module, node, DEFAULT_DEPENDENCY)
         if not isinstance(node, Package):
             return node
 
@@ -307,21 +322,32 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
         # importlib, because of this the function tries
         # to find submodules by looking in the filesystem.
         #
+
         spec = importlib.util.find_spec(package_name)
-        if spec is not None:
-            for path_name in spec.submodule_search_locations or []:
-                path = pathlib.Path(path_name)
-                for fn in path.glob("*.py"):
-                    module = fn.stem
-                    if not module.isidentifier():
-                        continue
+        assert spec is not None, f"Graph doesn't reflect reality for {package_name}"
+        for path_name in spec.submodule_search_locations or []:
+            path = pathlib.Path(path_name)
+            for fn in path.glob("*.py"):
+                module = fn.stem
+                if not module.isidentifier():
+                    continue
 
-                    abs_name = f"{package_name}.{module}"
-                    module_node = self._find_or_load_module(node, abs_name)
-                    self.add_edge(node, module_node, DEFAULT_DEPENDENCY)
-                    if isinstance(module_node, Package):
-                        self._work_stack.append((self.import_package, (abs_name,)))
+                module_node = self._find_or_load_module(
+                    node, f"{package_name}.{module}"
+                )
+                self.add_edge(node, module_node, DEFAULT_DEPENDENCY)
 
+                # This is harmless for modules, and avoids issues in edge cases
+                # where a package contains both a .py file and a sub package
+                self._work_stack.append(
+                    (self.import_package, (node, f"{package_name}.{module}"))
+                )
+
+            for fn in path.iterdir():
+                if fn.is_dir() and fn.name.isidentifier():
+                    self._work_stack.append(
+                        (self.import_package, (node, f"{package_name}.{fn.name}"))
+                    )
         return node
 
     def add_post_processing_hook(self, hook: ProcessingCallback) -> None:
@@ -435,6 +461,15 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
     # Internal: building the graph
     #
 
+    @contextlib.contextmanager
+    def _saved_stack(self) -> Iterator[None]:
+        saved_stack = self._work_stack
+        try:
+            self._work_stack = []
+            yield
+        finally:
+            self._work_stack = saved_stack + self._work_stack
+
     def _run_stack(self) -> None:
         """
         Process all items in the delayed work queue, until there
@@ -459,6 +494,9 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
           A node if their are implied actions, or :data:`None`
           otherwise.
         """
+        if self.find_node(module_name) is not None:
+            return None
+
         assert self.find_node(module_name) is None
         node: BaseNode
 
@@ -530,7 +568,9 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
         node: BaseNode
 
         assert not module_name.startswith(".")
-        assert self.find_node(module_name) is None
+        node = self.find_node(module_name)
+        if node is not None:
+            return node
 
         try:
             try:
@@ -565,13 +605,9 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
                 node = self._create_missing_module(importing_module, module_name)
                 return node
 
-        except (ImportError, SyntaxError) as exc:
-            if "." in module_name and (
-                (
-                    isinstance(exc, ModuleNotFoundError)
-                    and ("No module named" in str(exc))
-                )
-                or isinstance(exc, SyntaxError)
+        except Exception as exc:
+            if not isinstance(exc, ModuleNotFoundError) or "No module named" in str(
+                exc
             ):
                 # find_spec actually imports parent packages, which can
                 # cause problems when importing fails for some reason.
@@ -601,7 +637,6 @@ class ModuleGraph(ObjectGraph[BaseNode | PyPIDistribution, DependencyInfo]):
                 else:
                     node = self._create_missing_module(importing_module, module_name)
                     return node
-
             else:
                 node = self._create_missing_module(importing_module, module_name)
                 return node

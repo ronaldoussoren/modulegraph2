@@ -92,9 +92,9 @@ def run_scriptlet(venv_dir):
         [
             os.path.join(venv_dir, BIN_DIR, "python"),
             "-c",
-            "import modulegraph2; mg = modulegraph2.ModuleGraph(); mg.add_module('pip'); mg.add_module('distutils'); mg.add_module('distutils.command.bdist'); mg.report()",  # noqa: B950
+            "import modulegraph2; mg = modulegraph2.ModuleGraph(); mg.add_module('os'); mg.add_module('distutils'); mg.add_module('distutils.command.bdist'); mg.report()",  # noqa: B950
         ],
-        stderr=subprocess.DEVNULL,
+        # stderr=subprocess.DEVNULL,
     )
     lines = output.decode("utf-8").splitlines()
     assert lines[2].startswith("-----")

@@ -2,6 +2,7 @@ import os
 import pathlib
 import sys
 import tempfile
+import textwrap
 import unittest
 from io import StringIO
 
@@ -12,6 +13,7 @@ from modulegraph2 import (
     DependencyInfo,
     ExcludedModule,
     ExtensionModule,
+    FrozenModule,
     InvalidModule,
     InvalidRelativeImport,
     MissingModule,
@@ -2037,8 +2039,8 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         mg.add_node(node)
         mg.add_root(node)
 
-        mg.import_module(node, "no_imports")
-        mg._run_stack()
+        with mg.hook_context():
+            mg.import_module(node, "no_imports")
 
         self.assert_has_edge(
             mg, "no_imports", "marshal", {DependencyInfo(False, True, False, None)}
@@ -2226,7 +2228,8 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         mg.add_node(node)
         mg.add_root(node)
 
-        mg.import_module(node, "no_imports")
+        with mg.hook_context():
+            mg.import_module(node, "no_imports")
 
         self.assert_has_edge(
             mg, "missing", "no_imports", {DependencyInfo(False, True, False, None)}
@@ -2240,7 +2243,8 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         mg.add_root(node)
         mg.add_module("no_imports")
 
-        mg.import_module(node, "no_imports")
+        with mg.hook_context():
+            mg.import_module(node, "no_imports")
 
         self.assert_has_edge(
             mg, "missing", "no_imports", {DependencyInfo(False, True, False, None)}
@@ -2253,8 +2257,9 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         mg.add_node(node)
         mg.add_root(node)
 
-        mg.import_module(node, "no_imports")
-        mg.import_module(node, "no_imports")
+        with mg.hook_context():
+            mg.import_module(node, "no_imports")
+            mg.import_module(node, "no_imports")
 
         self.assert_has_edge(
             mg, "missing", "no_imports", {DependencyInfo(False, True, False, None)}
@@ -2267,7 +2272,8 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         mg.add_node(node)
         mg.add_root(node)
 
-        mg.import_module(node, "package.submod")
+        with mg.hook_context():
+            mg.import_module(node, "package.submod")
 
         self.assert_has_edge(
             mg, "missing", "package.submod", {DependencyInfo(False, True, False, None)}
@@ -2275,6 +2281,111 @@ class TestModuleGraphHooks(unittest.TestCase, util.TestMixin):
         self.assert_has_edge(
             mg, "package.submod", "package", {DependencyInfo(False, True, False, None)}
         )
+
+    def test_import_package_existing(self):
+        mg = ModuleGraph()
+
+        node = MissingModule("missing")
+        mg.add_node(node)
+        mg.add_root(node)
+
+        with mg.hook_context():
+            mg.import_package(node, "json")
+
+        json = mg.find_node("json")
+        json_encoder = mg.find_node("json.encoder")
+        json_decoder = mg.find_node("json.decoder")
+        json_tool = mg.find_node("json.tool")
+
+        self.assertIsNot(json, None)
+        self.assertIsNot(json_encoder, None)
+        self.assertIsNot(json_decoder, None)
+        self.assertIsNot(json_tool, None)
+
+        self.assert_has_edge(mg, json, json_encoder)
+        self.assert_has_edge(mg, json, json_decoder)
+        self.assert_has_edge(mg, json, json_tool)
+
+    def test_import_package_subpackages(self):
+        mg = ModuleGraph()
+
+        node = MissingModule("missing")
+        mg.add_node(node)
+        mg.add_root(node)
+
+        with mg.hook_context():
+            mg.import_package(node, "xml")
+
+        xml = mg.find_node("xml")
+        xml_etree = mg.find_node("xml.etree")
+        xml_etree_ElementTree = mg.find_node("xml.etree.ElementTree")
+
+        self.assertIsNot(xml, None)
+        self.assertIsNot(xml_etree, None)
+        self.assertIsNot(xml_etree_ElementTree, None)
+
+        self.assert_has_edge(mg, xml, xml_etree)
+        self.assert_has_edge(mg, xml_etree, xml_etree_ElementTree)
+
+    def test_import_package_pkg_vs_module_confusion(self):
+        mg = ModuleGraph()
+
+        node = MissingModule("missing")
+        mg.add_node(node)
+        mg.add_root(node)
+
+        with mg.hook_context():
+            mg.import_package(node, "pkg_e")
+
+        self.assertIsInstance(mg.find_node("pkg_e.module"), Package)
+        self.assertIsInstance(mg.find_node("pkg_e.module.sub"), SourceModule)
+
+    def test_import_package_source(self):
+        mg = ModuleGraph()
+
+        node = MissingModule("missing")
+        mg.add_node(node)
+        mg.add_root(node)
+
+        with mg.hook_context():
+            mg.import_package(node, "difflib")
+
+        self.assert_has_edge(
+            mg, "missing", "difflib", {DependencyInfo(False, True, False, None)}
+        )
+
+    def test_import_package_missing(self):
+        mg = ModuleGraph()
+
+        node = MissingModule("missing")
+        mg.add_node(node)
+        mg.add_root(node)
+
+        with mg.hook_context():
+            mg.import_package(node, "no_imports")
+
+        self.assert_has_edge(
+            mg, "missing", "no_imports", {DependencyInfo(False, True, False, None)}
+        )
+
+    def no_test_import_package_not_identifier(self):
+        mg = ModuleGraph()
+
+        node = MissingModule("missing")
+        mg.add_node(node)
+        mg.add_root(node)
+
+        with mg.hook_context():
+            mg.import_package(node, "test")
+
+        n = mg.find_node("test")
+        self.assertIsInstance(n, Package)
+
+        n = mg.find_node("test.test_zlib")
+        self.assertIsNot(n, None)
+
+        n = mg.find_node("test.audit-tests")
+        self.assertIs(n, None)
 
     def test_using_missing_hook(self):
         missing = set()
@@ -2466,3 +2577,72 @@ class TestModuleGraphQuerying(unittest.TestCase):
             fp.getvalue(),
             REPORT_HEADER + "MissingModule   n1                        FILE\n",
         )
+
+
+class TestModuleGraphScriptlets(unittest.TestCase):
+    def test_basic(self):
+        mg = ModuleGraph()
+        self.assertIs(mg.find_node("os"), None)
+        mg.add_dependencies_for_source(
+            textwrap.dedent(
+                """\
+            import os
+            import nosuchmodule
+            """
+            )
+        )
+
+        n = mg.find_node("os")
+        self.assertIsInstance(n, (SourceModule, FrozenModule))
+
+        n = mg.find_node("nosuchmodule")
+        self.assertIsInstance(n, MissingModule)
+
+        self.assertEqual(len(list(mg.roots())), 2)
+
+    def test_from_import(self):
+        mg = ModuleGraph()
+        self.assertIs(mg.find_node("os"), None)
+        mg.add_dependencies_for_source(
+            textwrap.dedent(
+                """\
+            from urllib import parse, request
+            """
+            )
+        )
+
+        n = mg.find_node("urllib")
+        self.assertIsInstance(n, Package)
+
+        n = mg.find_node("urllib.parse")
+        self.assertIsInstance(n, (SourceModule, FrozenModule))
+
+        n = mg.find_node("urllib.request")
+        self.assertIsInstance(n, (SourceModule, FrozenModule))
+
+        self.assertEqual(len(list(mg.roots())), 3)
+
+
+class TestStandardLibrarySpecials(unittest.TestCase):
+    def test_os_path(self):
+        mg = ModuleGraph()
+        mg.add_module("os.path")
+        n = mg.find_node("os.path")
+        self.assertIsInstance(n, AliasNode)
+
+        self.assertEqual(n.actual_module, os.path.__name__)
+
+    def test_xml_expat(self):
+        mg = ModuleGraph()
+        mg.add_module("xml.parsers.expat.model")
+        mg.add_module("xml.parsers.expat.errors")
+
+        n = mg.find_node("xml.parsers.expat.model")
+        self.assertIsInstance(n, AliasNode)
+        self.assertEqual(n.actual_module, "pyexpat")
+        self.assertIsInstance(mg.find_node(n.actual_module), ExtensionModule)
+
+        n = mg.find_node("xml.parsers.expat.errors")
+        self.assertIsInstance(n, AliasNode)
+        self.assertEqual(n.actual_module, "pyexpat")
+        self.assertIsInstance(mg.find_node(n.actual_module), ExtensionModule)

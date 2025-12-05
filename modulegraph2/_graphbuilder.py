@@ -24,6 +24,7 @@ from ._nodes import (
     BytecodeModule,
     ExtensionModule,
     FrozenModule,
+    FrozenPackage,
     InvalidModule,
     MissingModule,
     Module,
@@ -31,7 +32,6 @@ from ._nodes import (
     Package,
     SourceModule,
 )
-from ._virtualenv_support import adjust_path
 
 SIX_MOVES_GLOBALS = {"filter", "input", "map", "range", "xrange", "zip"}
 
@@ -185,11 +185,7 @@ def node_for_spec(
             loader=loader,
             distribution=None,
             extension_attributes={},
-            filename=(
-                pathlib.Path(adjust_path(spec.origin))
-                if spec.origin is not None
-                else None
-            ),
+            filename=(pathlib.Path(spec.origin) if spec.origin is not None else None),
             search_path=[pathlib.Path(loc) for loc in search_path],
             has_data_files=False,
         )
@@ -218,11 +214,7 @@ def node_for_spec(
                 else None
             ),
             extension_attributes={},
-            filename=(
-                pathlib.Path(adjust_path(spec.origin))
-                if spec.origin is not None
-                else None
-            ),
+            filename=(pathlib.Path(spec.origin) if spec.origin is not None else None),
             globals_read=set(),
             globals_written=set(),
             code=None,
@@ -239,7 +231,30 @@ def node_for_spec(
         # Likewise for _frozen_importlib_external._NamespaceLoader
 
         inspect_loader = cast(importlib.abc.InspectLoader, loader)
-        source_code = inspect_loader.get_source(spec.name)
+        try:
+            source_code = inspect_loader.get_source(spec.name)
+        except SyntaxError:
+            node = InvalidModule(
+                name=spec.name,
+                loader=loader,
+                distribution=(
+                    distribution_for_file(spec.origin, path)
+                    if spec.origin is not None
+                    and loader != importlib.machinery.FrozenImporter
+                    else None
+                ),
+                extension_attributes={},
+                filename=(
+                    pathlib.Path(spec.origin)
+                    if spec.origin is not None
+                    and loader != importlib.machinery.FrozenImporter
+                    else None
+                ),
+                globals_written=set(),
+                globals_read=set(),
+                code=None,
+            )
+            return node, []
 
         ast_imports: Iterable[ImportInfo] | None
         node_type: type[Module] | None = None
@@ -295,7 +310,7 @@ def node_for_spec(
             ),
             extension_attributes={},
             filename=(
-                pathlib.Path(adjust_path(spec.origin))
+                pathlib.Path(spec.origin)
                 if spec.origin is not None
                 and loader != importlib.machinery.FrozenImporter
                 else None
@@ -362,6 +377,7 @@ def node_for_spec(
                 return MissingModule(actual_name), ()
 
             if moved_spec.name == spec.name:
+                print(moved_spec.name, spec.name, actual_name, file=sys.stderr)
                 del sys.modules[actual_name]
                 importlib.invalidate_caches()
                 moved_spec = importlib.util.find_spec(actual_name)
@@ -446,9 +462,8 @@ def node_for_spec(
 
     if loader.is_package(spec.name):
         node_file = node.filename
-        assert node_file is not None, (spec.name, node.filename)
-
-        node_file = node_file.parent
+        if node_file is not None:
+            node_file = node_file.parent
 
         namespace_type = None
         if (
@@ -473,19 +488,21 @@ def node_for_spec(
                 namespace_type = "pkgutil"
 
         assert spec.submodule_search_locations is not None
+        node_class: type[Package]
+        if loader == importlib.machinery.FrozenImporter:
+            node_class = FrozenPackage
+        else:
+            node_class = Package
 
-        package = Package(
+        package = node_class(
             name=node.name,
             loader=node.loader,
             distribution=node.distribution,
             extension_attributes={},
             filename=node_file,
             init_module=node,
-            search_path=[
-                pathlib.Path(adjust_path(loc))
-                for loc in spec.submodule_search_locations
-            ],
-            has_data_files=_contains_datafiles(node_file),
+            search_path=[pathlib.Path(loc) for loc in spec.submodule_search_locations],
+            has_data_files=node_file is not None and _contains_datafiles(node_file),
             namespace_type=namespace_type,
         )
 
