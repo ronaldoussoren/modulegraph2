@@ -57,6 +57,9 @@ class TestArguments(unittest.TestCase):
         args = main.parse_arguments(["-x", "name1", "--exclude", "name2", "a"])
         self.assertEqual(args.excludes, ["name1", "name2"])
 
+        args = main.parse_arguments(["-x", "name1", "--exclude-stdlib", "a"])
+        self.assertEqual(args.excludes, ["name1"] + sorted(sys.stdlib_module_names))
+
     def test_node_type(self):
         args = main.parse_arguments(["-s", "a"])
         self.assertEqual(args.node_type, main.NodeType.SCRIPT)
@@ -166,7 +169,6 @@ class TestPrinter(unittest.TestCase):
             self.mg.add_module("import_sys_star")
             self.mg.add_module("wheel")
             self.mg.add_module("wheel.__main__")
-            self.mg.add_module("pip")
 
         main.print_graph(fp, main.OutputFormat.GRAPHVIZ, self.mg)
 
