@@ -45,7 +45,7 @@ class TestMixin:
                 f"Node for {node_name!r} is not an instance of {node_class.__name__} but {type(n).__name__}"  # noqa: B950
             )
 
-    def assert_has_edge(self, mg, from_name, to_name, edge_data):
+    def assert_has_edge(self, mg, from_name, to_name, edge_data=None):
         self.assert_has_node(mg, from_name)
         self.assert_has_node(mg, to_name)
 
