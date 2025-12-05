@@ -11,27 +11,36 @@ import modulegraph2._distributions as distributions
 
 
 def rewrite_record(wheel_file):
-    zf = zipfile.ZipFile(wheel_file, "a")
+    # This function completely rewrites the wheel file to avoid
+    # having two instances of the RECORD file in the wheel.
+    zf = zipfile.ZipFile(wheel_file, "r")
     if "simple_package-1.0.dist-info/RECORD" not in zf.namelist():
         zf.close()
         return
 
-    record = zf.read("simple_package-1.0.dist-info/RECORD")
+    zf_out = zipfile.ZipFile(str(wheel_file) + ".BAK", "w")
+    for info in zf.infolist():
+        record = zf.read(info)
 
-    new = []
-    for ln in record.splitlines():
-        fields = ln.rsplit(b",", 2)
-        if fields[0].startswith(b'"'):
+        if info.filename == "simple_package-1.0.dist-info/RECORD":
+            new = []
+            for ln in record.splitlines():
+                fields = ln.rsplit(b",", 2)
+                if fields[0].startswith(b'"'):
+                    continue
+
+                if b'"' in fields[0]:
+                    fields[0] = fields[0].replace(b'"', b'""')
+                if b"," in fields[0] or b'"' in fields[0]:
+                    fields[0] = b'"' + fields[0] + b'"'
+                new.append(b",".join(fields) + b"\n")
+            record = b"".join(new)
+
+        if info.is_dir():
             continue
-
-        if b'"' in fields[0]:
-            fields[0] = fields[0].replace(b'"', b'""')
-        if b"," in fields[0] or b'"' in fields[0]:
-            fields[0] = b'"' + fields[0] + b'"'
-        new.append(b",".join(fields) + b"\n")
-    record = b"".join(new)
-    zf.writestr("simple_package-1.0.dist-info/RECORD", record)
-    zf.close()
+        zf_out.writestr(info, record)
+    zf_out.close()
+    os.rename(str(wheel_file) + ".BAK", wheel_file)
 
 
 def build_and_install(source_path, destination_path):
