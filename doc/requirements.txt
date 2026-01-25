@@ -2,7 +2,7 @@ Pillow
 objectgraph
 sphinx-sitemap
 sphinxcontrib.spelling
-sphinx>=7.3,spinx<9
+sphinx>=7.3,<9
 shibuya
 sphinx-copybutton
 sphinx-design
